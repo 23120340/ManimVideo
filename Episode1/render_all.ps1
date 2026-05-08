@@ -11,7 +11,7 @@ $scenes = @(
 
 foreach ($s in $scenes) {
     Write-Host "`n==> Rendering $($s[1])..." -ForegroundColor Cyan
-    python -m manim -pql $s[0] $s[1]
+    python -m manim -pqh $s[0] $s[1]
     if ($LASTEXITCODE -ne 0) {
         Write-Host "ERROR: $($s[1]) failed" -ForegroundColor Red
         break

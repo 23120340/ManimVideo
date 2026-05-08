@@ -266,7 +266,10 @@ class Scene2EyeDiversity(Scene):
             LEFT * 2.5, RIGHT * 2.5, angle=-PI * 0.7,
             color=GRAY_LIGHT, stroke_width=3,
         )
-        shell_top = Line(LEFT * 2.5, RIGHT * 2.5, color=GRAY_LIGHT, stroke_width=3)
+        shell_top = ArcBetweenPoints(
+            LEFT * 2.5, RIGHT * 2.5, angle=PI * 0.18,
+            color=GRAY_LIGHT, stroke_width=3,
+        )
         shell_group = VGroup(shell, shell_top).move_to(DOWN * 0.5)
 
         center = np.array([0, -0.5, 0])

@@ -41,7 +41,7 @@ GRAY_DARKER = "#374151"
 # ────────────────────────────────────────────────────────────────
 # Fourier curve smoother
 # ────────────────────────────────────────────────────────────────
-def _fourier_smooth(pts_2d, n_harmonics=8, n_out=150):
+def fourier_smooth(pts_2d, n_harmonics=8, n_out=150):
     """
     Spectral interpolation of a closed 2-D curve via DFT low-pass filter.
 
@@ -110,7 +110,7 @@ def create_fish(color=BLUE_3B1B, stroke_width=2.5):
         [ 1.22, -0.28],   # chest
         [ 1.48, -0.08],   # chin / lower jaw
     ])
-    body_pts = _fourier_smooth(raw_body, n_harmonics=8, n_out=180)
+    body_pts = fourier_smooth(raw_body, n_harmonics=8, n_out=180)
     body = VMobject(color=color, stroke_width=sw, fill_opacity=0)
     body.set_points_as_corners(body_pts)
     body.close_path()

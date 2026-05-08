@@ -19,86 +19,26 @@ Run:
     manim -pql scene3.py Scene3ZebraTwist
 """
 
+import os
 from manim import *
 import numpy as np
 from common import *
 
-
-# ────────────────────────────────────────────────────────────────
-# Helper: vẽ ngựa vằn schematic
-# ────────────────────────────────────────────────────────────────
-def create_zebra(stripe_color=GRAY_LIGHT, body_color="#000000",
-                 with_stripes=True, scale=1.0):
-    """
-    Ngựa vằn schematic: thân ellipse + cổ + đầu + 4 chân + đuôi + sọc.
-    Trả về VGroup để dễ animate.
-    """
-    body = Ellipse(width=2.6, height=1.1, color=stripe_color, stroke_width=2.5,
-                   fill_color=body_color, fill_opacity=1)
-    neck = Polygon(
-        [0.9, 0.3, 0], [1.5, 1.0, 0],
-        [1.7, 0.95, 0], [1.1, 0.15, 0],
-        color=stripe_color, stroke_width=2.5,
-        fill_color=body_color, fill_opacity=1,
-    )
-    head = Ellipse(width=0.9, height=0.55, color=stripe_color, stroke_width=2.5,
-                   fill_color=body_color, fill_opacity=1)
-    head.move_to([1.85, 1.05, 0]).rotate(-15 * DEGREES)
-    eye = Dot([2.0, 1.18, 0], radius=0.05, color=stripe_color)
-
-    leg_fl = Line([0.7, -0.5, 0], [0.7, -1.6, 0], color=stripe_color, stroke_width=4)
-    leg_fr = Line([0.4, -0.5, 0], [0.4, -1.6, 0], color=stripe_color, stroke_width=4)
-    leg_bl = Line([-0.7, -0.5, 0], [-0.7, -1.6, 0], color=stripe_color, stroke_width=4)
-    leg_br = Line([-1.0, -0.5, 0], [-1.0, -1.6, 0], color=stripe_color, stroke_width=4)
-
-    tail = Line([-1.3, 0.1, 0], [-1.7, -0.6, 0], color=stripe_color, stroke_width=2.5)
-
-    parts = VGroup(body, neck, head, eye, leg_fl, leg_fr, leg_bl, leg_br, tail)
-
-    # Sọc — line trắng xếp dọc thân
-    stripes = VGroup()
-    if with_stripes:
-        for x in np.linspace(-1.1, 1.1, 9):
-            stripe = Line(
-                [x, -0.5, 0], [x, 0.5, 0],
-                color=stripe_color, stroke_width=4.5,
-            )
-            stripes.add(stripe)
-        # Sọc cổ
-        for i in range(4):
-            t = i / 3.0
-            x = 1.0 + t * 0.5
-            y = 0.3 + t * 0.6
-            s = Line(
-                [x - 0.05, y - 0.1, 0], [x + 0.1, y + 0.15, 0],
-                color=stripe_color, stroke_width=3.5,
-            )
-            stripes.add(s)
-
-    full = VGroup(parts, stripes)
-    full.scale(scale)
-    return full
+_ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 
 
-def create_lion_silhouette(scale=1.0):
-    """Sư tử minimal silhouette — thân + đầu + đuôi."""
-    body = Ellipse(width=2.4, height=0.9, color=ORANGE_3B1B,
-                   fill_opacity=0.85, stroke_width=2)
-    head = Circle(radius=0.5, color=ORANGE_3B1B,
-                  fill_opacity=0.85, stroke_width=2)
-    head.move_to([1.5, 0.5, 0])
-    # Bờm
-    mane = Circle(radius=0.7, color="#B45309",
-                  fill_opacity=0.6, stroke_width=0).move_to(head.get_center())
-    tail = ArcBetweenPoints([-1.2, 0, 0], [-1.7, 0.7, 0], angle=-PI / 3,
-                            color=ORANGE_3B1B, stroke_width=3)
-    tail_tip = Dot([-1.7, 0.75, 0], radius=0.08, color="#B45309")
-    legs = VGroup(*[
-        Line([x, -0.4, 0], [x, -1.2, 0], color=ORANGE_3B1B, stroke_width=3.5)
-        for x in [0.6, 0.3, -0.6, -0.9]
-    ])
-    return VGroup(mane, body, head, tail, tail_tip, legs).scale(scale)
+def load_animal_svg(filename, color=GRAY_LIGHT, stroke_width=1.5):
+    """Load SVG từ assets/, xoá nền, tô màu cho nền tối."""
+    mob = SVGMobject(os.path.join(_ASSETS, filename))
+    mob.set_stroke(color, width=stroke_width)
+    mob.set_fill(opacity=0)
+    return mob
 
+def load_color_animal_svg(filename, color=GRAY_LIGHT, stroke_width=1.5):
+    """Load SVG từ assets/, xoá nền, tô màu cho nền tối."""
+    mob = SVGMobject(os.path.join(_ASSETS, filename))
+    mob.set_stroke(color, width=stroke_width)
+    return mob
 
 # ────────────────────────────────────────────────────────────────
 # Main scene
@@ -110,7 +50,7 @@ class Scene3ZebraTwist(Scene):
         # ============================================================
         # PART A — Ngựa vằn xuất hiện + câu hỏi
         # ============================================================
-        zebra = create_zebra(scale=1.4).move_to(DOWN * 0.5)
+        zebra = load_animal_svg("zebra.svg").scale_to_fit_height(3.5).move_to(DOWN * 0.5)
         ground = Line(LEFT * 7, RIGHT * 7, color=GRAY_DIM, stroke_width=1.5)
         ground.move_to(DOWN * 2.7)
 
@@ -139,12 +79,28 @@ class Scene3ZebraTwist(Scene):
         ).move_to(RIGHT * 3.3 + DOWN * 0.5)
 
         # Icon sư tử nhỏ
-        lion_icon = create_lion_silhouette(scale=0.35)
-        lion_icon.move_to(guess_box_left.get_left() + RIGHT * 0.9)
+        lion_icon = (load_color_animal_svg("lion.svg", color=ORANGE_3B1B)
+                     .scale_to_fit_height(1.1)
+                     .set_stroke(width=0)
+                     .move_to(guess_box_left.get_left() + RIGHT * 0.9))
 
-        zebra_icon = create_zebra(scale=0.35).move_to(
-            guess_box_right.get_left() + RIGHT * 0.9 + DOWN * 0.1
-        )
+        zebra_icon = (load_color_animal_svg("zebra.svg")
+                      .scale_to_fit_height(1.1)
+                      .set_stroke(width=0)
+                      .move_to(guess_box_right.get_left() + RIGHT * 0.9 + DOWN * 0.1))
+
+        lion_bg = (RoundedRectangle(
+                       width=1.35, height=1.35, corner_radius=0.18,
+                       color=WHITE, fill_color=WHITE, fill_opacity=1,
+                       stroke_width=0,
+                   ).move_to(lion_icon.get_center())
+                    .set_z_index(-1))
+        zebra_bg = (RoundedRectangle(
+                        width=1.35, height=1.35, corner_radius=0.18,
+                        color=WHITE, fill_color=WHITE, fill_opacity=1,
+                        stroke_width=0,
+                    ).move_to(zebra_icon.get_center())
+                     .set_z_index(-1))
 
         guess_a = Text(
             "A. Camouflage from lions",
@@ -157,7 +113,7 @@ class Scene3ZebraTwist(Scene):
 
         # Thu nhỏ ngựa vằn và câu hỏi lên góc trên
         self.play(
-            zebra.animate.scale(0.4).move_to(UP * 2.7 + LEFT * 5.5),
+            zebra.animate.scale(0.4).set_stroke(width=0.5).move_to(UP * 2.7 + LEFT * 5.5),
             question.animate.scale(0.4).move_to(UP * 2.7 + LEFT * 1.5).set_color(GRAY_LIGHT),
             run_time=1.2,
         )
@@ -167,8 +123,8 @@ class Scene3ZebraTwist(Scene):
             run_time=1.0,
         )
         self.play(
-            FadeIn(lion_icon), Write(guess_a),
-            FadeIn(zebra_icon), Write(guess_b),
+            FadeIn(lion_bg), FadeIn(lion_icon), Write(guess_a),
+            FadeIn(zebra_bg), FadeIn(zebra_icon), Write(guess_b),
             run_time=1.5,
         )
         self.wait(2.5)
@@ -178,7 +134,7 @@ class Scene3ZebraTwist(Scene):
         # ============================================================
         old_layout = VGroup(
             zebra, question, guess_box_left, guess_box_right,
-            lion_icon, guess_a, zebra_icon, guess_b, ground,
+            lion_bg, lion_icon, guess_a, zebra_bg, zebra_icon, guess_b, ground,
         )
         self.play(FadeOut(old_layout), run_time=1.0)
 
@@ -193,20 +149,15 @@ class Scene3ZebraTwist(Scene):
         ).move_to(RIGHT * 3.5 + UP * 3)
 
         # Ngựa vằn ở 2 panel — bản trái nét, bản phải mờ
-        zebra_human = create_zebra(scale=0.55).move_to(LEFT * 3.5 + DOWN * 0.3)
+        zebra_human = (load_animal_svg("zebra.svg")
+                       .scale_to_fit_height(1.8)
+                       .move_to(LEFT * 3.5 + DOWN * 0.3))
 
         # "Mờ" mô phỏng = giảm số sọc + low-pass, ở đây hack bằng:
         # vẽ ngựa vằn nhưng KHÔNG có sọc (chỉ blob xám)
-        zebra_lion_blur = VGroup(
-            Ellipse(width=2.6 * 0.55, height=1.1 * 0.55,
-                    color=GRAY_MID, fill_opacity=0.7, stroke_width=0),
-            Ellipse(width=0.9 * 0.55, height=0.55 * 0.55,
-                    color=GRAY_MID, fill_opacity=0.7, stroke_width=0,
-                    ).move_to(np.array([1.85 * 0.55, 1.05 * 0.55, 0])).rotate(-15 * DEGREES),
-            *[Line([x, -0.5 * 0.55, 0], [x, -1.6 * 0.55, 0],
-                   color=GRAY_MID, stroke_width=2.5)
-              for x in [0.7 * 0.55, 0.4 * 0.55, -0.7 * 0.55, -1.0 * 0.55]],
-        ).move_to(RIGHT * 3.5 + DOWN * 0.3)
+        zebra_lion_blur = (load_color_animal_svg("zebra_no_stripe.svg")
+                           .scale_to_fit_height(1.8)
+                           .move_to(RIGHT * 3.5 + DOWN * 0.3))
 
         # Halo blur quanh bản phải
         blur_halo = Circle(
@@ -287,17 +238,9 @@ class Scene3ZebraTwist(Scene):
         self.wait(0.5)
 
         # Muỗi: dot nhỏ + 2 cánh
-        def make_mosquito(pos):
-            body = Dot(pos, radius=0.08, color=RED_BRAIN)
-            wing_l = Ellipse(width=0.25, height=0.12,
-                             color=GRAY_LIGHT, stroke_width=1,
-                             fill_opacity=0.4).next_to(body, UL, buff=0.02)
-            wing_r = Ellipse(width=0.25, height=0.12,
-                             color=GRAY_LIGHT, stroke_width=1,
-                             fill_opacity=0.4).next_to(body, UR, buff=0.02)
-            return VGroup(wing_l, wing_r, body)
-
-        mosquito = make_mosquito(np.array([-4, 2.5, 0]))
+        mosquito = (load_color_animal_svg("mosquito.svg")
+                    .scale_to_fit_height(0.5)
+                    .move_to(np.array([-4, 2.5, 0])))
         self.play(FadeIn(mosquito), run_time=0.5)
 
         # Bay zigzag + cố đậu xuống — disorientation
@@ -329,25 +272,9 @@ class Scene3ZebraTwist(Scene):
         # ============================================================
         # PART E — Cú lật bài: nông dân sơn sọc lên BÒ
         # ============================================================
-        # Bò: thân, đầu, sừng, vú, 4 chân
-        cow_body = Ellipse(width=3.0, height=1.3, color=GRAY_LIGHT,
-                           stroke_width=2.5, fill_color="#000000",
-                           fill_opacity=1)
-        cow_head = Ellipse(width=1.2, height=0.85, color=GRAY_LIGHT,
-                           stroke_width=2.5, fill_color="#000000",
-                           fill_opacity=1).move_to([1.8, 0.4, 0])
-        horn_l = Line([1.7, 0.85, 0], [1.5, 1.2, 0], color=GRAY_LIGHT,
-                      stroke_width=3)
-        horn_r = Line([2.0, 0.85, 0], [2.2, 1.2, 0], color=GRAY_LIGHT,
-                      stroke_width=3)
-        cow_legs = VGroup(*[
-            Line([x, -0.6, 0], [x, -1.7, 0], color=GRAY_LIGHT, stroke_width=4)
-            for x in [1.0, 0.5, -0.7, -1.2]
-        ])
-        cow_tail = Line([-1.5, 0.2, 0], [-2.0, -0.5, 0],
-                        color=GRAY_LIGHT, stroke_width=2.5)
-        cow = VGroup(cow_body, cow_head, horn_l, horn_r, cow_legs, cow_tail)
-        cow.scale(1.0).move_to(DOWN * 0.4)
+        cow = (load_animal_svg("cow.svg")
+               .scale_to_fit_height(2.5)
+               .move_to(DOWN * 0.4))
 
         cow_label = Text(
             "Cow.  Ordinary.",
@@ -357,15 +284,10 @@ class Scene3ZebraTwist(Scene):
         self.play(FadeIn(cow), Write(cow_label), run_time=1.5)
         self.wait(1.0)
 
-        # Sơn sọc lên bò
-        cow_stripes = VGroup()
-        for x in np.linspace(-1.3, 1.3, 9):
-            s = Line(
-                [x, -0.6, 0], [x, 0.3, 0],
-                color=GRAY_LIGHT, stroke_width=4.5,
-            )
-            cow_stripes.add(s)
-        cow_stripes.move_to(cow_body.get_center() + DOWN * 0.0)
+        # Sơn sọc lên bò — vị trí tính từ bounding box của SVG
+        cow_stripe = (load_animal_svg("stripe_painted_cow.svg")
+               .scale_to_fit_height(2.5)
+               .move_to(DOWN * 0.4))
 
         cow_label_2 = Text(
             "Stripe-painted cow.  A real experiment.",
@@ -374,8 +296,7 @@ class Scene3ZebraTwist(Scene):
 
         self.play(Transform(cow_label, cow_label_2), run_time=0.8)
         self.play(
-            LaggedStart(*[Create(s) for s in cow_stripes], lag_ratio=0.08),
-            run_time=1.5,
+            FadeTransform(cow, cow_stripe), run_time = 1.2
         )
         self.wait(1.2)
 
@@ -393,7 +314,7 @@ class Scene3ZebraTwist(Scene):
         self.play(Create(stat_box), Write(stat_text), run_time=1.5)
         self.wait(2.5)
 
-        e_pack = VGroup(cow, cow_stripes, cow_label, stat_box, stat_text)
+        e_pack = VGroup(cow_stripe, cow_label, stat_box, stat_text)
         self.play(FadeOut(e_pack), run_time=1.0)
 
         # ============================================================
