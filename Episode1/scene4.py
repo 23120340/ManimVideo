@@ -327,20 +327,28 @@ class Scene4MathFormulation(Scene):
             for i in range(5)
         ])
 
-        # Spring as zigzag
-        spring = VMobject(color=GRAY_LIGHT, stroke_width=2)
-        spring_pts = [[wall_x, spring_y, 0]]
         n_zig = 8
-        for i in range(n_zig):
-            x = wall_x + (block_x - wall_x) * (i + 1) / (n_zig + 1)
-            y = spring_y + (0.18 if i % 2 == 0 else -0.18)
-            spring_pts.append([x, y, 0])
-        spring_pts.append([block_x, spring_y, 0])
-        spring.set_points_as_corners(spring_pts)
+        block_offset = ValueTracker(0)
 
-        block = Square(side_length=0.6, color=BLUE_3B1B,
-                       fill_opacity=0.4, stroke_width=2)
-        block.move_to([block_x + 0.3, spring_y, 0])
+        def make_spring():
+            offset = block_offset.get_value()
+            current_block_x = block_x + offset
+            pts = [[wall_x, spring_y, 0]]
+            for i in range(n_zig):
+                x = wall_x + (current_block_x - wall_x) * (i + 1) / (n_zig + 1)
+                y = spring_y + (0.18 if i % 2 == 0 else -0.18)
+                pts.append([x, y, 0])
+            pts.append([current_block_x, spring_y, 0])
+            s = VMobject(color=GRAY_LIGHT, stroke_width=2)
+            s.set_points_as_corners(pts)
+            return s
+
+        spring = always_redraw(make_spring)
+
+        block = always_redraw(lambda: Square(
+            side_length=0.6, color=BLUE_3B1B,
+            fill_opacity=0.4, stroke_width=2,
+        ).move_to([block_x + 0.3 + block_offset.get_value(), spring_y, 0]))
 
         phys_caption = Text(
             "know physics  →  write model  →  optimize",
@@ -402,9 +410,12 @@ class Scene4MathFormulation(Scene):
         )
 
         # Block dao động trong physics pane (gợi simulation đang chạy)
+        # Xóa vòng for cũ, thay bằng:
         for shift_amt in [0.2, -0.4, 0.4, -0.2]:
-            self.play(block.animate.shift(RIGHT * shift_amt),
-                      run_time=0.4, rate_func=smooth)
+            self.play(
+                block_offset.animate.increment_value(shift_amt),
+                run_time=0.4, rate_func=smooth,
+            )
 
         self.wait(2.0)
 
