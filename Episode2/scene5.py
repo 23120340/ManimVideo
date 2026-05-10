@@ -290,7 +290,7 @@ class Scene2Surprise(Scene):
             stroke_width=2.0, corner_radius=0.12,
         )
         lesson_grp = VGroup(lesson_box, lesson_txt)
-        lesson_grp.to_corner(DR, buff=0.5)
+        lesson_grp.move_to(RIGHT*0.3 + DOWN*2.5)
 
         self.play(
             Create(lesson_box, run_time=0.8),

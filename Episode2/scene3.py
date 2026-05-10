@@ -36,29 +36,29 @@ class Scene2Navigation(Scene):
         )
         room.move_to(LEFT * 0.5 + DOWN * 0.3)
 
-        # Obstacles (walls / furniture)
+        # Obstacles — two horizontal barriers creating an S-shaped chicane.
+        # obs1: flush against LEFT wall, gap on the RIGHT  (x > 1.0)
+        # obs2: flush against RIGHT wall, gap on the LEFT  (x < -1.8)
+        gap = 1.3
         obs1 = Rectangle(
-            width=0.3, height=1.5,
+            width=room.get_width() - gap, height=0.25,
             color=GRAY_MID, stroke_width=1.8,
-            fill_color=GRAY_DARKER, fill_opacity=0.6,
+            fill_color=GRAY_DARKER, fill_opacity=0.7,
         )
-        obs1.move_to(room.get_center() + LEFT * 0.9 + UP * 0.4)
+        obs1.set_y(room.get_center()[1] + 0.8)
+        obs1.align_to(room, LEFT)
+        # left edge flush with room left wall; gap [1.0, 2.3] on right
 
         obs2 = Rectangle(
-            width=1.6, height=0.28,
+            width=room.get_width() - gap - 0.2, height=0.25,
             color=GRAY_MID, stroke_width=1.8,
-            fill_color=GRAY_DARKER, fill_opacity=0.6,
+            fill_color=GRAY_DARKER, fill_opacity=0.7,
         )
-        obs2.move_to(room.get_center() + RIGHT * 0.7 + DOWN * 0.55)
+        obs2.set_y(room.get_center()[1] - 0.6)
+        obs2.align_to(room, RIGHT)
+        # right edge flush with room right wall; gap [-3.3, -1.8] on left
 
-        obs3 = Rectangle(
-            width=0.28, height=0.9,
-            color=GRAY_MID, stroke_width=1.8,
-            fill_color=GRAY_DARKER, fill_opacity=0.6,
-        )
-        obs3.move_to(room.get_center() + LEFT * 0.1 + DOWN * 1.1)
-
-        floor_plan = VGroup(room, obs1, obs2, obs3)
+        floor_plan = VGroup(room, obs1, obs2)
 
         # Start dot
         start_pos = room.get_corner(UL) + RIGHT * 0.38 + DOWN * 0.35
@@ -79,9 +79,8 @@ class Scene2Navigation(Scene):
             run_time=1.0,
         )
         self.play(
-            FadeIn(obs1, run_time=0.5),
-            FadeIn(obs2, run_time=0.5),
-            FadeIn(obs3, run_time=0.5),
+            FadeIn(obs1, run_time=0.6),
+            FadeIn(obs2, run_time=0.6),
         )
         self.play(
             FadeIn(start_dot, scale=1.3, run_time=0.6),
@@ -112,44 +111,61 @@ class Scene2Navigation(Scene):
                     segs.add(Line(p0, p1, color=color, stroke_width=stroke_width))
             return segs
 
-        # RED: Blind agent — random zigzag
-        sx, sy = start_pos[0], start_pos[1]
-        gx, gy = goal_pos[0], goal_pos[1]
-        red_pts = [
-            (sx, sy), (sx + 0.3, sy - 0.6), (sx - 0.1, sy - 1.2),
-            (sx + 0.7, sy - 1.5), (sx + 0.4, sy - 0.8), (sx + 1.1, sy - 1.1),
-            (sx + 1.5, sy - 1.8), (sx + 0.9, sy - 2.3), (sx + 1.8, sy - 2.6),
-            (gx, gy),
-        ]
-        red_path = make_path(red_pts, RED_BRAIN, stroke_width=2.2, dash=True)
+        # Paths must navigate the S-shaped chicane:
+        #   Step 1 — go right through gap at obs1 (x > 1.0)
+        #   Step 2 — descend in right corridor
+        #   Step 3 — go left through gap at obs2 (x < -1.8)
+        #   Step 4 — proceed to goal below obs2
+        # All coordinates verified to not pass through obs1 or obs2.
+        sx, sy = start_pos[0], start_pos[1]   # (-2.92, 1.35)
+        gx, gy = goal_pos[0], goal_pos[1]     # ( 1.92, -1.95)
 
-        # BLUE: 128×128 camera — near straight line
+        # BLUE: 128×128 camera — efficient S-path
         blue_pts = [
-            (sx, sy), (sx + 0.2, sy - 0.5), (sx + 0.6, sy - 1.1),
-            (sx + 1.2, sy - 1.8), (sx + 1.8, sy - 2.4), (gx, gy),
+            (sx,    sy),     # start
+            (1.20,  0.75),   # right gap: above obs1
+            (1.20,  0.10),   # right corridor: below obs1, above obs2
+            (-2.00, 0.10),   # left gap: still above obs2, left of obs2 left edge
+            (-2.00, -1.10),  # below obs2, through left gap
+            (gx,    gy),     # goal
         ]
         blue_path = make_path(blue_pts, BLUE_3B1B, stroke_width=2.5)
 
-        # GREEN: 4 photoreceptors — similar with minor detour
+        # GREEN: 4 photoreceptors — near-identical to camera
         green_pts = [
-            (sx, sy), (sx + 0.15, sy - 0.55), (sx + 0.55, sy - 1.05),
-            (sx + 0.95, sy - 1.35), (sx + 1.35, sy - 1.85),
-            (sx + 1.75, sy - 2.35), (gx, gy),
+            (sx,    sy),
+            (1.15,  0.72),
+            (1.15,  0.08),
+            (-1.95, 0.08),
+            (-1.95, -1.15),
+            (gx,    gy),
         ]
         green_path = make_path(green_pts, GREEN_3B1B, stroke_width=2.5)
 
-        # Path labels (positioned at mid-path)
+        # RED: Blind agent — same chicane but with wasteful detours
+        red_pts = [
+            (sx,    sy),     # start
+            (0.60,  1.20),   # wanders right above obs1
+            (1.30,  0.80),   # enters right gap (above obs1)
+            (1.30, -0.20),   # right corridor (above obs2)
+            (0.50, -0.20),   # wanders left — wasted motion
+            (-0.50, -0.40),  # continues left above obs2
+            (-2.10, -0.20),  # reaches left gap entry
+            (-2.10, -1.20),  # drops below obs2 through left gap
+            (-1.20, -1.60),  # wanders right below obs2
+            (gx,    gy),     # goal
+        ]
+        red_path = make_path(red_pts, RED_BRAIN, stroke_width=2.2, dash=True)
+
+        # Path labels
         lbl_red  = Text("Blind agent",      font_size=18, color=RED_BRAIN)
         lbl_blue = Text("128×128 camera",   font_size=18, color=BLUE_3B1B)
         lbl_grn  = Text("4 photoreceptors", font_size=18, color=GREEN_3B1B)
 
-        red_mid  = np.array([sx + 0.7, sy - 1.0, 0])
-        blue_mid = np.array([sx + 1.0, sy - 1.4, 0])
-        grn_mid  = np.array([sx + 1.55, sy - 2.1, 0])
-
-        lbl_red.move_to(red_mid + LEFT * 1.1 + UP * 0.2)
-        lbl_blue.move_to(blue_mid + LEFT * 1.3)
-        lbl_grn.move_to(grn_mid + RIGHT * 1.1)
+        # Labels placed in the right corridor where paths diverge visually
+        lbl_red.move_to(np.array([0.60, 1.40, 0]))
+        lbl_blue.move_to(np.array([1.85, 0.10, 0]))
+        lbl_grn.move_to(np.array([1.85, -0.18, 0]))
 
         # Animate each path
         self.play(

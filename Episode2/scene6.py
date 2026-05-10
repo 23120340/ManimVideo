@@ -107,7 +107,6 @@ class Scene2SimToReal(Scene):
 
         for pt in sim_path_pts[1:]:
             self.play(sim_robot.animate.move_to(pt), run_time=0.4, rate_func=smooth)
-            # Update sensor colors randomly to simulate readings
             new_colors = np.random.default_rng(hash(tuple(pt)) % (2**31)).choice(sensor_colors, 4, replace=True)
             for px, nc in zip(sensor_pixels, new_colors):
                 px.set_fill(color=nc)
@@ -122,7 +121,6 @@ class Scene2SimToReal(Scene):
         )
         real_room.move_to(RIGHT * 3.2 + DOWN * 0.2)
 
-        # Warmer floor tones
         real_floor = VGroup()
         warm_palette = ["#4A3728", "#3D2E1E", "#5C4533", "#4A3728", "#3D2E1E"]
         for r in range(n_grid):
@@ -140,14 +138,12 @@ class Scene2SimToReal(Scene):
                 )
                 real_floor.add(sq)
 
-        # Real robot (same design but slightly warmer color)
         real_robot = RoundedRectangle(
             width=0.28, height=0.38, corner_radius=0.06,
             color=ORANGE_3B1B, stroke_width=2, fill_opacity=0.35,
         )
         real_robot.move_to(real_room.get_corner(UL) + RIGHT * 0.3 + DOWN * 0.3)
 
-        # Goal (pink ball)
         goal_ball = Circle(
             radius=0.14, color=PINK_3B1B,
             stroke_width=2.0, fill_opacity=0.85,
@@ -165,7 +161,6 @@ class Scene2SimToReal(Scene):
             FadeIn(goal_ball_lbl, run_time=0.4),
         )
 
-        # Animate real robot navigating to goal
         real_path_pts = [
             real_room.get_corner(UL) + RIGHT * 0.3 + DOWN * 0.3,
             real_room.get_corner(UL) + RIGHT * 0.9 + DOWN * 0.75,
@@ -178,11 +173,11 @@ class Scene2SimToReal(Scene):
 
         # ── "Zero real-world fine-tuning" text ───────────────────
         zero_ft = Text("Zero real-world fine-tuning", font_size=26, color=GREEN_3B1B, weight=BOLD)
-        zero_ft.to_edge(DOWN, buff=1.4)
+        zero_ft.to_edge(DOWN, buff=0.5)
         self.play(Write(zero_ft, run_time=1.0, rate_func=smooth))
         self.wait(0.5)
 
-        # ── Training curve (simulator) ────────────────────────────
+        # ── Fade panels, show training curve ─────────────────────
         self.play(
             FadeOut(VGroup(
                 sim_room, sim_floor, sim_robot, sensor_pixels,
@@ -191,19 +186,23 @@ class Scene2SimToReal(Scene):
             ), run_time=0.8),
         )
 
-        curve_title = Text("Training Curve (Simulator)", font_size=28, color=GRAY_LIGHT)
-        curve_title.to_edge(UP, buff=1.1)
+        # ── Training curve ────────────────────────────────────────
+        # Title riêng cho curve — dùng subtitle nhỏ hơn, không đè lên title chính
+        curve_title = Text("Training Curve (Simulator)", font_size=26, color=GRAY_LIGHT)
+        curve_title.next_to(title, DOWN, buff=0.18)
         self.play(FadeIn(curve_title, run_time=0.7))
 
-        # Axes
-        ax_origin = LEFT * 3.5 + DOWN * 1.2
-        ax_w, ax_h = 6.0, 2.8
+        # Axes — dịch trái và xuống vừa đủ để stats card có chỗ bên phải
+        ax_origin = LEFT * 5 + DOWN * 1.8
+        ax_w, ax_h = 5.5, 3.2
 
         x_axis = Arrow(ax_origin, ax_origin + RIGHT * ax_w, buff=0, color=GRAY_MID, stroke_width=2)
         y_axis = Arrow(ax_origin, ax_origin + UP * ax_h, buff=0, color=GRAY_MID, stroke_width=2)
-        x_lbl = Text("Episodes (×1000)", font_size=18, color=GRAY_MID)
+
+        x_lbl = Text("Episodes (×1000)", font_size=17, color=GRAY_MID)
         x_lbl.next_to(x_axis, DOWN, buff=0.15).shift(RIGHT * 0.5)
-        y_lbl = Text("Loss", font_size=18, color=GRAY_MID)
+
+        y_lbl = Text("Loss", font_size=17, color=GRAY_MID)
         y_lbl.next_to(y_axis, LEFT, buff=0.12).shift(UP * 0.3)
 
         self.play(
@@ -213,7 +212,7 @@ class Scene2SimToReal(Scene):
             FadeIn(y_lbl, run_time=0.5),
         )
 
-        # Generate decreasing loss curve
+        # Loss curve
         n_pts = 30
         t = np.linspace(0, 1, n_pts)
         loss = 0.9 * np.exp(-3.5 * t) + 0.08 + 0.025 * np.sin(t * 20)
@@ -226,11 +225,10 @@ class Scene2SimToReal(Scene):
         curve_vmob = VMobject(color=GREEN_3B1B, stroke_width=2.8)
         curve_vmob.set_points_smoothly([np.array([*p, 0]) if len(p) == 2 else p for p in curve_pts])
 
-        # Animate curve drawing
         self.play(Create(curve_vmob, run_time=2.5, rate_func=smooth))
         self.wait(0.3)
 
-        # x-axis tick labels
+        # Tick labels
         for i, ep in enumerate([0, 2, 4, 6, 8, 10]):
             x_pos = ax_origin + RIGHT * (i / 5) * ax_w
             tick = Line(x_pos + DOWN * 0.06, x_pos + UP * 0.06, color=GRAY_MID, stroke_width=1.2)
@@ -239,14 +237,14 @@ class Scene2SimToReal(Scene):
             self.add(tick, lbl)
         self.wait(0.4)
 
-        # ── Stats card ────────────────────────────────────────────
+        # ── Stats card — bên phải, giữa màn hình theo chiều dọc ──
         stats_lines = [
-            "Point-goal:  91% success (sim)  vs  87% (real)",
-            "Target-find: 84% success (sim)  vs  79% (real)",
+            "Point-goal:  91% (sim)  vs  87% (real)",
+            "Target-find: 84% (sim)  vs  79% (real)",
         ]
         stats_group = VGroup()
         for line in stats_lines:
-            t_obj = Text(line, font_size=20, color=GRAY_LIGHT)
+            t_obj = Text(line, font_size=19, color=GRAY_LIGHT)
             stats_group.add(t_obj)
         stats_group.arrange(DOWN, buff=0.28, aligned_edge=LEFT)
 
@@ -255,7 +253,7 @@ class Scene2SimToReal(Scene):
             stroke_width=2.0, corner_radius=0.12,
         )
         stats_all = VGroup(stats_box, stats_group)
-        stats_all.to_corner(DR, buff=0.45)
+        stats_all.move_to(RIGHT * 3.8 + UP * 0.3)
 
         self.play(
             Create(stats_box, run_time=0.8),
@@ -266,16 +264,16 @@ class Scene2SimToReal(Scene):
         )
         self.wait(0.6)
 
-        # ── Conclusion text ───────────────────────────────────────
+        # ── Conclusion text — dưới stats card, không đè graph ────
         conclude_txt = Text(
             "The 4-pixel design transfers.\nNo retraining needed.",
-            font_size=28, color=YELLOW_3B1B, weight=BOLD, line_spacing=1.35,
+            font_size=26, color=YELLOW_3B1B, weight=BOLD, line_spacing=1.35,
         )
-        conclude_txt.to_edge(DOWN, buff=0.45)
+        conclude_txt.next_to(stats_all, DOWN, buff=0.45)
+
         self.play(Write(conclude_txt, run_time=1.2, rate_func=smooth))
         self.wait(2.0)
 
         # ── FadeOut everything ────────────────────────────────────
-        all_objects = self.mobjects
-        self.play(FadeOut(Group(*all_objects), run_time=1.2, rate_func=smooth))
+        self.play(FadeOut(Group(*self.mobjects), run_time=1.2, rate_func=smooth))
         self.wait(0.2)

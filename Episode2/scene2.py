@@ -70,19 +70,19 @@ class Scene2Photoreceptor(Scene):
         self.wait(0.3)
 
         # ── Arrow + single large square ───────────────────────────
-        arrow_cam = Arrow(
-            surround_rect.get_right() + RIGHT * 0.1,
-            RIGHT * 0.5 + DOWN * 0.1,
-            color=GRAY_LIGHT, buff=0.1, stroke_width=2.5,
-            max_tip_length_to_length_ratio=0.3,
-        )
-
         receptor_sq = Square(
             side_length=0.65,
             fill_color=TEAL_EP2, fill_opacity=0.75,
             stroke_color=TEAL_EP2, stroke_width=2.5,
         )
         receptor_sq.move_to(RIGHT * 0.5 + DOWN * 0.1)
+        
+        arrow_cam = Arrow(
+            surround_rect.get_right() + RIGHT * 0.1,
+            receptor_sq.get_left(),                   # ← thay đổi ở đây
+            color=GRAY_LIGHT, buff=0.1, stroke_width=2.5,
+            max_tip_length_to_length_ratio=0.3,
+        )
 
         receptor_label = Text(
             "1 photoreceptor\n= spatial average",
@@ -121,7 +121,7 @@ class Scene2Photoreceptor(Scene):
             width=0.8, height=1.1, corner_radius=0.12,
             color=GRAY_DIM, stroke_width=1.8, fill_opacity=0,
         )
-        body_outline.to_corner(DR, buff=1.5).shift(LEFT * 1.0 + UP * 0.3)
+        body_outline.move_to(RIGHT * 5.5 + ORIGIN)
         pos_dot = Dot(body_outline.get_top() + DOWN * 0.15, radius=0.08, color=YELLOW_3B1B)
 
         self.play(

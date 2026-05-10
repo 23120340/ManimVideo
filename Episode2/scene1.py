@@ -16,8 +16,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
 import numpy as np
 
+_ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 
-class Scene2Ep1Recap(Scene):
+def load_color_svg(filename, color=GRAY_LIGHT, stroke_width=1.5):
+            mob = SVGMobject(os.path.join(_ASSETS, filename))
+            mob.set_stroke(color, width=stroke_width)
+            return mob
+
+class Scene2Ep1Recap(Scene):   
     def construct(self):
         self.camera.background_color = BG_COLOR
 
@@ -27,29 +33,13 @@ class Scene2Ep1Recap(Scene):
         self.play(FadeIn(prev_label, shift=RIGHT * 0.3), run_time=0.8)
         self.wait(0.4)
 
-        # ── Robot schematic (left side) ───────────────────────────
-        robot_body = RoundedRectangle(
-            width=1.0, height=1.4,
-            corner_radius=0.18,
-            color=BLUE_3B1B, stroke_width=2.5, fill_opacity=0.2,
-        )
-        # Wheels
-        wheel_l = Circle(radius=0.18, color=GRAY_MID, stroke_width=2, fill_opacity=0.3)
-        wheel_r = Circle(radius=0.18, color=GRAY_MID, stroke_width=2, fill_opacity=0.3)
-        wheel_l.next_to(robot_body, LEFT, buff=-0.05).shift(DOWN * 0.1)
-        wheel_r.next_to(robot_body, RIGHT, buff=-0.05).shift(DOWN * 0.1)
-        # Lens on top
-        lens = Circle(radius=0.14, color=TEAL_EP2, stroke_width=2.2, fill_opacity=0.35)
-        lens.move_to(robot_body.get_top() + DOWN * 0.22)
-
-        robot = VGroup(robot_body, wheel_l, wheel_r, lens)
-        robot.shift(LEFT * 3.5)
+        robot = (load_color_svg("robot.svg", color=ORANGE_3B1B)
+                     .scale_to_fit_height(3.5)
+                     .set_stroke(width=0)
+                     .move_to(LEFT * 3.5))
 
         self.play(
-            DrawBorderThenFill(robot_body, run_time=1.2),
-            FadeIn(wheel_l, run_time=0.8),
-            FadeIn(wheel_r, run_time=0.8),
-            FadeIn(lens, run_time=0.8),
+            FadeIn(robot, run_time=1.2),
         )
         self.wait(0.3)
 
