@@ -128,11 +128,14 @@ agent = VGroup(brain, body).arrange(RIGHT, buff=2)
 - Vẽ võng mạc người (1 hố vàng) → võng mạc đại bàng (2 hố vàng).
 - Animation: hai tia "high-res" chiếu ra từ mắt đại bàng, một nhìn thẳng, một nhìn 45°.
 - Hệ quả hành vi: đại bàng săn theo đường xoắn ốc — `ParametricFunction` vẽ quỹ đạo logarithmic spiral.
+> VO: "Mắt người có một điểm nhìn sắc nét nhất — gọi là hố vàng. Đại bàng có **hai**. Một nhìn thẳng phía trước. Một nhìn chếch 45 độ sang bên. Điều đó có nghĩa là gì trong thực tế? Khi săn mồi, đại bàng bay theo đường xoắn ốc — không phải vì ngẫu nhiên, mà vì đường đó giữ con mồi cố định trên hố vàng thứ hai trong suốt quá trình lao xuống. Cơ thể đã **mã hoá chiến thuật săn mồi** vào chính cấu trúc của mắt."
 
 **Card 3 — Sò điệp có 200 con mắt**
 - Vẽ vỏ sò với chấm xanh nhỏ rải khắp viền.
 - Zoom vào một chấm: lộ ra một con mắt nhỏ với *gương* bên trong (không phải thấu kính!).
 - Cú twist: "Thay vì gom photoreceptor lại thành một retina dày đặc, sò điệp **phân tán** chúng thành 200 con mắt độc lập."
+
+> VO: "Sò điệp có khoảng 200 con mắt, rải dọc viền vỏ. Nếu bạn nghĩ đó là 200 con mắt 'bình thường' — sai. Bên trong mỗi con mắt không phải thấu kính, mà là **gương**. Một gương parabol hội tụ ánh sáng về phía sau, ngược hoàn toàn với cách mắt người hoạt động. Và thay vì dồn toàn bộ độ phân giải vào một điểm, sò điệp phân tán nó ra 200 sensor độc lập. Mỗi sensor tệ hơn mắt người nhiều lần — nhưng tổng thể, chúng bao phủ một trường nhìn mà không có con mắt đơn lẻ nào đạt được."
 
 **Card 4 — Cá hang động (cave fish)**
 - Animation tiến hoá: con cá ban đầu có mắt to, qua các thế hệ mắt teo dần đi rồi biến mất, da phủ kín.
