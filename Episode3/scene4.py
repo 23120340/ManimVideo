@@ -10,7 +10,7 @@ from common import *
 import numpy as np
 
 
-class Scene3DiffuseBot(Scene):
+class Scene4DiffuseBot(Scene):
     def construct(self):
         self.camera.background_color = BG_COLOR
 

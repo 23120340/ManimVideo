@@ -63,7 +63,7 @@ def build_pipeline(y, arrow_color, arrow_dir=1):
     return boxes, arrows
 
 
-class Scene3DiffSim(Scene):
+class Scene2DiffSim(Scene):
     def construct(self):
         self.camera.background_color = BG_COLOR
 

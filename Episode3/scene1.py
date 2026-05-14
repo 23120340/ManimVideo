@@ -10,7 +10,7 @@ from common import *
 import numpy as np
 
 
-class Scene3Hook(Scene):
+class Scene1Hook(Scene):
     def construct(self):
         self.camera.background_color = BG_COLOR
 
@@ -60,101 +60,143 @@ class Scene3Hook(Scene):
 
         self.play(FadeIn(bar_bg), FadeIn(bar_fill), run_time=0.7)
 
-        # ── Soft robot at DOWN*0.5 ─────────────────────────────────────
+        # ── Soft robot at DOWN*0.5 — limbs are individually addressable ─
         robot_pos = DOWN * 0.5
         body_ellipse = Ellipse(
-            width=1.4,
-            height=0.9,
-            color=TEAL_EP2,
-            fill_opacity=0.3,
-            stroke_width=2.5,
+            width=1.4, height=0.9,
+            color=TEAL_EP2, fill_opacity=0.3, stroke_width=2.5,
         ).move_to(robot_pos)
 
-        angles = [PI / 4, 3 * PI / 4, -PI / 4, -3 * PI / 4]
-        limbs = VGroup()
-        tips = VGroup()
-        for a in angles:
-            base = body_ellipse.get_center() + np.array(
-                [np.cos(a) * 0.55, np.sin(a) * 0.4, 0]
-            )
-            tip_pt = body_ellipse.get_center() + np.array(
-                [np.cos(a) * 1.15, np.sin(a) * 0.9, 0]
-            )
-            limbs.add(Line(base, tip_pt, color=TEAL_EP2, stroke_width=3))
-            tips.add(
-                Circle(
-                    radius=0.1,
-                    color=TEAL_EP2,
-                    fill_opacity=0.6,
-                    stroke_width=0,
-                ).move_to(tip_pt)
-            )
+        # Default limb anchor angles (where limb attaches to body)
+        BASE_ANGLES = [PI / 4, 3 * PI / 4, -PI / 4, -3 * PI / 4]  # UR, UL, LR, LL
+        LIMB_LEN = 0.65
 
-        robot = VGroup(body_ellipse, limbs, tips)
+        def build_limb(base_angle, pose_delta=0.0, x_shift=0.0):
+            """A limb VGroup(line, tip) pivoted at its body-attachment point.
+            pose_delta rotates the limb around the attachment point."""
+            base_pt = robot_pos + np.array([
+                np.cos(base_angle) * 0.55 + x_shift,
+                np.sin(base_angle) * 0.4,
+                0,
+            ])
+            actual_angle = base_angle + pose_delta
+            tip_pt = base_pt + np.array([
+                np.cos(actual_angle) * LIMB_LEN,
+                np.sin(actual_angle) * LIMB_LEN,
+                0,
+            ])
+            line = Line(base_pt, tip_pt, color=TEAL_EP2, stroke_width=3)
+            tip = Circle(
+                radius=0.1, color=TEAL_EP2,
+                fill_opacity=0.6, stroke_width=0,
+            ).move_to(tip_pt)
+            return VGroup(line, tip)
+
+        # Pre-compute per-iteration limb pose deltas:
+        #   i=2-4: chaotic flailing (large random angles)
+        #   i=5-7: damping (smaller random angles, transitioning)
+        #   i=8-11: coordinated alternating gait (diagonal pairs in phase)
+        #   i=12: neutral pose, ready to walk
+        rng = np.random.default_rng(7)
+        pose_deltas = {}
+        for i in range(2, 13):
+            for limb_idx in range(4):
+                if i <= 4:
+                    chaos = (5 - i) / 3.0           # 1.0, 0.67, 0.33
+                    pose_deltas[(i, limb_idx)] = rng.uniform(-PI / 3, PI / 3) * chaos
+                elif i <= 7:
+                    damp = (8 - i) / 4.0            # 0.75, 0.5, 0.25
+                    pose_deltas[(i, limb_idx)] = rng.uniform(-PI / 6, PI / 6) * damp
+                elif i <= 11:
+                    # Diagonal pairs (UR+LL) vs (UL+LR) alternate
+                    pair = 0 if limb_idx in (0, 3) else 1
+                    phase = (i - 8) * PI / 2 + pair * PI
+                    pose_deltas[(i, limb_idx)] = np.sin(phase) * 0.22
+                else:  # i == 12
+                    pose_deltas[(i, limb_idx)] = 0.0
+
+        # Initial limb set (iteration 1 — default neutral pose)
+        limbs = VGroup(*[build_limb(a, 0.0) for a in BASE_ANGLES])
+
+        robot = VGroup(body_ellipse, limbs)
 
         self.play(FadeIn(body_ellipse), run_time=0.6)
         self.play(
-            LaggedStart(*[Create(l) for l in limbs], lag_ratio=0.15),
+            LaggedStart(*[Create(l[0]) for l in limbs], lag_ratio=0.15),
             run_time=0.9,
         )
         self.play(
-            LaggedStart(*[GrowFromCenter(t) for t in tips], lag_ratio=0.12),
+            LaggedStart(*[GrowFromCenter(l[1]) for l in limbs], lag_ratio=0.12),
             run_time=0.7,
         )
         self.wait(0.4)
 
         # ── Iteration loop 2 → 12 ──────────────────────────────────────
-        current_rotation = 0.0
         for i in range(2, 13):
             num_color = GREEN_3B1B if i == 12 else YELLOW_3B1B
             new_num = Text(
-                str(i),
-                font_size=48,
-                color=num_color,
-                weight=BOLD,
-            )
-            new_num.move_to(iter_num.get_center())
+                str(i), font_size=48, color=num_color, weight=BOLD,
+            ).move_to(iter_num.get_center())
 
             fill_color = GREEN_3B1B if i == 12 else TEAL_EP2
             new_fill = make_bar_fill(i, fill_color)
 
-            # Robot motion script
-            if i == 2:
-                robot_anim = robot.animate.rotate(PI / 12)
-                current_rotation += PI / 12
-            elif i == 3:
-                robot_anim = robot.animate.rotate(-PI / 8)
-                current_rotation -= PI / 8
-            elif i == 4:
-                robot_anim = robot.animate.rotate(PI / 16)
-                current_rotation += PI / 16
-            elif i == 5:
-                robot_anim = robot.animate.rotate(-PI / 20)
-                current_rotation -= PI / 20
-            elif i == 6:
-                robot_anim = robot.animate.rotate(-current_rotation).scale(1.05)
-                current_rotation = 0.0
-            elif i in (7, 9, 11):
-                robot_anim = robot.animate.shift(UP * 0.05)
-            elif i in (8, 10):
-                robot_anim = robot.animate.shift(DOWN * 0.05)
-            else:  # i == 12
-                robot_anim = robot.animate.scale(1.0)
+            # Build new limbs at this iteration's pose
+            new_limbs = VGroup(*[
+                build_limb(BASE_ANGLES[k], pose_deltas[(i, k)])
+                for k in range(4)
+            ])
 
             self.play(
                 ReplacementTransform(iter_num, new_num),
                 ReplacementTransform(bar_fill, new_fill),
-                robot_anim,
-                run_time=0.5,
+                ReplacementTransform(limbs, new_limbs),
+                run_time=0.45,
             )
             iter_num = new_num
             bar_fill = new_fill
+            limbs = new_limbs
+            robot = VGroup(body_ellipse, limbs)
 
         self.wait(0.4)
 
-        # ── Robot walks (right, then back) ─────────────────────────────
-        self.play(robot.animate.shift(RIGHT * 1.5), run_time=1.0)
-        self.play(robot.animate.shift(LEFT * 1.5), run_time=0.8)
+        # ── Robot walks: body + limbs shift together, limbs cycle the gait ─
+        # One full gait cycle = 2 phases (diagonal pair A lifts, then B lifts).
+        for phase_idx, x_target in enumerate([0.75, 1.5]):
+            # Alternate gait phase: pair 0 (UR+LL) lifts, then pair 1 (UL+LR)
+            shifted_limbs = VGroup(*[
+                build_limb(
+                    BASE_ANGLES[k],
+                    pose_delta=0.25 if (k in ((0, 3) if phase_idx == 0 else (1, 2))) else -0.08,
+                    x_shift=x_target,
+                )
+                for k in range(4)
+            ])
+            self.play(
+                body_ellipse.animate.shift(RIGHT * (x_target - (0 if phase_idx == 0 else 0.75))),
+                ReplacementTransform(limbs, shifted_limbs),
+                run_time=0.55,
+            )
+            limbs = shifted_limbs
+
+        # Walk back to start
+        for phase_idx, x_target in enumerate([0.75, 0.0]):
+            shifted_limbs = VGroup(*[
+                build_limb(
+                    BASE_ANGLES[k],
+                    pose_delta=0.25 if (k in ((1, 2) if phase_idx == 0 else (0, 3))) else -0.08,
+                    x_shift=x_target,
+                )
+                for k in range(4)
+            ])
+            self.play(
+                body_ellipse.animate.shift(LEFT * (1.5 - x_target if phase_idx == 0 else 0.75)),
+                ReplacementTransform(limbs, shifted_limbs),
+                run_time=0.55,
+            )
+            limbs = shifted_limbs
+
+        robot = VGroup(body_ellipse, limbs)
         self.wait(0.3)
 
         # ── Bottom callout ─────────────────────────────────────────────

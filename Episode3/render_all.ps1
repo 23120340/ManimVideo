@@ -1,9 +1,10 @@
 $scenes = @(
-    @("scene1.py", "Scene3Hook"),
-    @("scene2.py", "Scene3DiffSim"),
+    @("scene1.py", "Scene1Hook"),
+    @("scene2.py", "Scene2DiffSim"),
     @("scene3.py", "Scene3CoDesign"),
-    @("scene4.py", "Scene3DiffuseBot"),
-    @("scene5.py", "Scene3Outro")
+    @("scene_attractor.py", "SceneAttractor"),
+    @("scene4.py", "Scene4DiffuseBot"),
+    @("scene5.py", "Scene5Outro")
 )
 
 foreach ($s in $scenes) {

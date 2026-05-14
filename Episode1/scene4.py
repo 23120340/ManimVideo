@@ -429,10 +429,14 @@ class Scene4MathFormulation(Scene):
         self.play(Write(bridge), run_time=1.5)
         self.wait(3.0)
 
+        # Detach always_redraw mobjects before FadeOut — otherwise they
+        # keep getting redrawn at full opacity each frame and the fade flickers.
+        self.remove(spring, block)
+
         all_e = VGroup(
             branch_title, phys_box, learn_box,
             phys_title, learn_title, newton,
-            wall, wall_hatch, spring, block,
+            wall, wall_hatch,
             nn_grp, input_icon, output_icon,
             phys_caption, learn_caption, bridge,
         )

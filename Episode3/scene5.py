@@ -9,7 +9,7 @@ from common import *
 import numpy as np
 
 
-class Scene3Outro(Scene):
+class Scene5Outro(Scene):
     def construct(self):
         self.camera.background_color = BG_COLOR
 

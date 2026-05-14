@@ -19,7 +19,7 @@ from common import *
 import numpy as np
 
 
-class Scene2Navigation(Scene):
+class Scene3Navigation(Scene):
     def construct(self):
         self.camera.background_color = BG_COLOR
 

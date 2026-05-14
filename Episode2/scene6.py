@@ -19,7 +19,7 @@ from common import *
 import numpy as np
 
 
-class Scene2SimToReal(Scene):
+class Scene6SimToReal(Scene):
     def construct(self):
         self.camera.background_color = BG_COLOR
 

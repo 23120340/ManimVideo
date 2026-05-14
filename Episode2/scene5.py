@@ -20,7 +20,7 @@ from common import *
 import numpy as np
 
 
-class Scene2Surprise(Scene):
+class Scene5Surprise(Scene):
     def construct(self):
         self.camera.background_color = BG_COLOR
 

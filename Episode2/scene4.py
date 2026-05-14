@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *
 import numpy as np
 
-class Scene2BiLevel(Scene):
+class Scene4BiLevel(Scene):
     def construct(self):
         self.camera.background_color = BG_COLOR
 

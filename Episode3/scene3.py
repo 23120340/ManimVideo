@@ -239,27 +239,21 @@ class Scene3CoDesign(Scene):
         y_axis_label.next_to(axes, LEFT, buff=0.2)
         y_axis_label.rotate(PI / 2)
 
-        # naive curve: dashed, RED_BRAIN, slight upward (worse)
+        # naive scaling DECREASES — curse of dimensionality kicks in
+        def naive_fn(x):
+            return 0.82 - 0.13 * x
         naive_curve_solid = axes.plot(
-            lambda x: 0.78 - 0.10 * x + 0.04 * x ** 1.2,
-            x_range=[0.1, 4.9],
-            color=RED_BRAIN,
-            stroke_width=3,
+            naive_fn, x_range=[0.1, 4.9],
+            color=RED_BRAIN, stroke_width=3,
         )
         naive_curve = DashedVMobject(naive_curve_solid, num_dashes=22)
 
+        # co-design STAYS FLAT then INCREASES with more parameters
+        def codesign_fn(x):
+            return 0.35 + 0.085 * max(0, x - 0.3) ** 1.3
         codesign_curve = axes.plot(
-            lambda x: 0.35 - 0.045 * (x - 0.3) if x < 0.3 else 0.35 - 0.045 * (x - 0.3),
-            x_range=[0.1, 4.9],
-            color=GREEN_3B1B,
-            stroke_width=3,
-        )
-        # Better: monotonic improvement with model size
-        codesign_curve = axes.plot(
-            lambda x: max(0.07, 0.50 - 0.085 * x),
-            x_range=[0.1, 4.9],
-            color=GREEN_3B1B,
-            stroke_width=3.5,
+            codesign_fn, x_range=[0.1, 4.9],
+            color=GREEN_3B1B, stroke_width=3.5,
         )
 
         naive_label = Text(
@@ -267,8 +261,7 @@ class Scene3CoDesign(Scene):
             font_size=17,
             color=RED_BRAIN,
         )
-        naive_y_end = 0.78 - 0.10 * 4.7 + 0.04 * 4.7 ** 1.2
-        naive_label.next_to(axes.c2p(4.7, naive_y_end), RIGHT, buff=0.15)
+        naive_label.next_to(axes.c2p(4.7, naive_fn(4.7)), RIGHT, buff=0.15)
 
         codesign_label = Text(
             "co-design",
@@ -276,7 +269,7 @@ class Scene3CoDesign(Scene):
             color=GREEN_3B1B,
             weight=BOLD,
         )
-        codesign_y_end = max(0.07, 0.50 - 0.085 * 4.7)
+        codesign_y_end = codesign_fn(4.7)
         codesign_label.next_to(axes.c2p(4.7, codesign_y_end), RIGHT, buff=0.15)
 
         # Bottom callout

@@ -23,7 +23,7 @@ def load_color_svg(filename, color=GRAY_LIGHT, stroke_width=1.5):
             mob.set_stroke(color, width=stroke_width)
             return mob
 
-class Scene2Ep1Recap(Scene):   
+class Scene1Ep1Recap(Scene):
     def construct(self):
         self.camera.background_color = BG_COLOR
 
