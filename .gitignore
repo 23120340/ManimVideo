@@ -1,0 +1,41 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Manim render/cache output
+media/
+**/media/
+frame_checks/
+**/frame_checks/
+frame_checks_1080/
+**/frame_checks_1080/
+.manim/
+Tex/
+
+# Local render helpers/output
+build/
+outputs/
+renders/
+concat_list.txt
+list.txt
+/ManimVideo_full*.mp4
+/preview_full*.mp4
+/ep*_full*.mp4
+/*_full*.mp4
+
+# Environment/local files
+.venv/
+venv/
+.env
+.env.*
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

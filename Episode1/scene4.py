@@ -139,7 +139,9 @@ class Scene4MathFormulation(Scene):
             dash_length=0.12, stroke_width=1.5,
         ))
 
-        self.add(ds_marker, ps_marker, connector)
+        self.play(FadeIn(ds_marker), FadeIn(ps_marker), run_time=0.6)
+        self.play(Create(connector), run_time=0.7)
+        self.wait(0.2)
 
         # Trượt từ 0.5 → 5
         self.play(x_tracker.animate.set_value(5.0),
@@ -429,14 +431,15 @@ class Scene4MathFormulation(Scene):
         self.play(Write(bridge), run_time=1.5)
         self.wait(3.0)
 
-        # Detach always_redraw mobjects before FadeOut — otherwise they
-        # keep getting redrawn at full opacity each frame and the fade flickers.
-        self.remove(spring, block)
+        # Freeze the always_redraw mobjects so they fade with the rest of the
+        # card instead of being redrawn at full opacity during the transition.
+        spring.clear_updaters()
+        block.clear_updaters()
 
         all_e = VGroup(
             branch_title, phys_box, learn_box,
             phys_title, learn_title, newton,
-            wall, wall_hatch,
+            wall, wall_hatch, spring, block,
             nn_grp, input_icon, output_icon,
             phys_caption, learn_caption, bridge,
         )

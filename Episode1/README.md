@@ -13,11 +13,11 @@ The episode asks: *in a smart organism, where does intelligence live — in the 
 | `scene0.py` | 0 — Cold open | 0:00 – 0:35 | Dead fish "swimming" in a current |
 | `scene1.py` | 1 — Main question | 0:35 – 2:00 | Brain vs body, θ_brain / θ_body split |
 | `scene2.py` | 2 — Eye diversity | 2:00 – 5:30 | 6 cards: cat/goat, eagle, scallop, cave fish, tarsier, butterfly |
-| `scene3.py` | 3 — Zebra twist | 5:30 – 7:30 | Wrong intuition; the real answer is mosquitoes |
+| `scene3.py` | 3 — Zebra twist | 5:30 – 7:30 | Wrong intuition; the real answer is biting flies |
 | `scene4.py` | 4 — Math formulation | 7:30 – 11:00 | Design space, U(θ), optimization pipeline, two branches |
 | `scene5.py` | 5 — Karl Sims 1994 | 11:00 – 13:00 | Voxel creatures + transform to fish |
 | `scene6.py` | 6 — Episode 2 setup | 13:00 – 17:00 | Pixel reduction 128 → 4 → cliffhanger |
-| `scene7.py` | 7 — Outro | 17:00 – end | Credits + Patreon + channel logo |
+| `scene7.py` | 7 — Outro | 17:00 – end | Credits + source note + channel logo |
 
 Total visual runtime: ~17–18 minutes (before voice-over pacing adjustments).
 
@@ -223,10 +223,10 @@ card = make_title_card("Intelligence in the Body",
 
 - **Scene 0** — schematic is a placeholder. Final version should use stock footage of a real fish, then `Transform` to the schematic.
 - **Scene 2 Card 3** — 50 dots represent ~200 real scallop eyes. Increase dot count for HD output.
-- **Scene 3** — lion / cow / mosquito schematics are minimal. Can be replaced with illustrations or footage.
+- **Scene 3** — lion / cow / biting-fly schematics are minimal. Can be replaced with illustrations or footage.
 - **Scene 5** — voxel creatures are 2D silhouettes. Sims' originals are 3D — consider licensing the 1994 clip if publishing publicly.
 - **Scene 6** — pixel grid maxes out at **64×64** in code (128² = 16k squares is too slow in Manim); the label reads "~128 px" to compensate.
-- **Scene 7 credits** — researcher names (Amir Zamir, Andre Cazenave Souto, Andy Spielberg, Sönke Johnsen) are **placeholders**. Verify names and affiliations from the source tutorial before publishing.
+- **Scene 7 credits** — currently uses safe generic credits. Replace with verified names and affiliations only after checking the original sources.
 
 ---
 
@@ -251,8 +251,8 @@ card = make_title_card("Intelligence in the Body",
 - [Manim Community docs](https://docs.manim.community/)
 - [3Blue1Brown channel](https://www.youtube.com/@3blue1brown) — Grant Sanderson
 - Source paper: *"Computational Design of Diverse Morphologies and Sensors for Vision and Robotics"*
-- Script: `../3blue1brown_script.md`
+- Script: `../docs/series_script_3blue1brown.md`
 
 ---
 
-*All scientific figures should be cross-checked against the source paper before publication. Researcher names in Scene 7 are placeholders — confirm before releasing publicly.*
+*All scientific figures should be cross-checked against the source paper before publication. Add named credits only after verifying names and affiliations.*

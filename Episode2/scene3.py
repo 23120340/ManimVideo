@@ -194,12 +194,12 @@ class Scene3Navigation(Scene):
             lbl_red, lbl_blue, lbl_grn,
         )
         self.play(
-            floor_group.animate.scale(0.72).to_edge(LEFT, buff=0.3).shift(DOWN * 0.1),
+            floor_group.animate.scale(0.72).to_edge(LEFT, buff=0.8).shift(DOWN * 0.1),
             run_time=0.9, rate_func=smooth,
         )
 
         # ── Performance bar chart ─────────────────────────────────
-        chart_origin = RIGHT * 1.5 + DOWN * 1.2
+        chart_origin = RIGHT * 1.75 + DOWN * 1.2
 
         bar_data = [
             ("Blind",     0.31, RED_BRAIN),

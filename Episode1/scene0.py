@@ -58,8 +58,8 @@ class Scene0ColdOpen(MovingCameraScene):
             run_time=2.5, rate_func=smooth,
         )
 
-        # Sợi dây từ miệng cá đi lên trên-phải (ra ngoài frame)
-        rope_start = fish[2].get_center() + RIGHT * 0.05
+        # Sợi dây móc vào miệng cá, không trỏ vào mắt.
+        rope_start = fish[0].get_right() + LEFT * 0.08 + DOWN * 0.04
         rope_end = RIGHT * 6 + UP * 4.5
         rope = Line(rope_start, rope_end, color=GRAY_LIGHT, stroke_width=2.5)
         anchor = Dot(rope_end, color=GRAY_LIGHT, radius=0.12)

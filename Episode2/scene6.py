@@ -205,11 +205,20 @@ class Scene6SimToReal(Scene):
         y_lbl = Text("Loss", font_size=17, color=GRAY_MID)
         y_lbl.next_to(y_axis, LEFT, buff=0.12).shift(UP * 0.3)
 
+        tick_group = VGroup()
+        for i, ep in enumerate([0, 2, 4, 6, 8, 10]):
+            x_pos = ax_origin + RIGHT * (i / 5) * ax_w
+            tick = Line(x_pos + DOWN * 0.06, x_pos + UP * 0.06, color=GRAY_MID, stroke_width=1.2)
+            lbl = Text(str(ep), font_size=14, color=GRAY_MID)
+            lbl.next_to(tick, DOWN, buff=0.08)
+            tick_group.add(tick, lbl)
+
         self.play(
             Create(x_axis, run_time=0.6),
             Create(y_axis, run_time=0.6),
             FadeIn(x_lbl, run_time=0.5),
             FadeIn(y_lbl, run_time=0.5),
+            FadeIn(tick_group, run_time=0.5),
         )
 
         # Loss curve
@@ -228,13 +237,6 @@ class Scene6SimToReal(Scene):
         self.play(Create(curve_vmob, run_time=2.5, rate_func=smooth))
         self.wait(0.3)
 
-        # Tick labels
-        for i, ep in enumerate([0, 2, 4, 6, 8, 10]):
-            x_pos = ax_origin + RIGHT * (i / 5) * ax_w
-            tick = Line(x_pos + DOWN * 0.06, x_pos + UP * 0.06, color=GRAY_MID, stroke_width=1.2)
-            lbl = Text(str(ep), font_size=14, color=GRAY_MID)
-            lbl.next_to(tick, DOWN, buff=0.08)
-            self.add(tick, lbl)
         self.wait(0.4)
 
         # ── Stats card — bên phải, giữa màn hình theo chiều dọc ──

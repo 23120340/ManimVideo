@@ -142,11 +142,7 @@ class Scene4DiffuseBot(Scene):
             fill_opacity=1,
         )
         box3_label = Text("+ physics", font_size=15, color=ORANGE_3B1B)
-        box3_math = MathTex(
-            r"\nabla_\theta\mathcal{L}",
-            font_size=26,
-            color=ORANGE_3B1B,
-        )
+        box3_math = Text("grad theta L", font_size=20, color=ORANGE_3B1B)
         box3_inner = VGroup(box3_label, box3_math).arrange(DOWN, buff=0.10)
         box3_inner.move_to(box3_rect.get_center())
         box3 = VGroup(box3_rect, box3_inner)

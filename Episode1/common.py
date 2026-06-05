@@ -115,12 +115,22 @@ def create_fish(color=BLUE_3B1B, stroke_width=2.5):
     body.set_points_as_corners(body_pts)
     body.close_path()
 
+    mouth = Arc(
+        radius=0.10,
+        angle=-65 * DEGREES,
+        start_angle=200 * DEGREES,
+        color=color,
+        stroke_width=sw * 0.75,
+    )
+    mouth.move_to(np.array([1.49, -0.03, 0]))
+
     # ── Tail (caudal fin) ─────────────────────────────────────────
+    tail_root = np.array([-1.40, 0.0])
     top_raw = np.array([
-        [-1.42,  0.00], [-1.52,  0.12], [-1.65,  0.26],
+        [tail_root[0], tail_root[1]], [-1.52,  0.12], [-1.65,  0.26],
         [-1.85,  0.44], [-2.08,  0.60], [-2.28,  0.70],
         [-2.18,  0.52], [-2.00,  0.34], [-1.82,  0.18],
-        [-1.62,  0.05], [-1.48,  0.00],
+        [-1.62,  0.05], [tail_root[0], tail_root[1]],
     ])
     top_lobe = VMobject(color=color, stroke_width=sw, fill_opacity=0)
     top_lobe.set_points_smoothly(
@@ -133,14 +143,14 @@ def create_fish(color=BLUE_3B1B, stroke_width=2.5):
         np.column_stack([bot_raw, np.zeros(len(bot_raw))]))
 
     ray_lines = VGroup()
-    for t in np.linspace(0.15, 0.85, 5):
+    for t in np.linspace(0.18, 0.82, 5):
         y = t * 0.70
-        x_base = -1.42 - t * 0.08
-        x_tip  = -1.55 - t * 0.70
+        x_base = tail_root[0] - 0.06 - t * 0.04
+        x_tip  = -1.55 - t * 0.64
         ray_lines.add(
-            Line([x_base,  y * 0.20, 0], [x_tip,  y, 0],
+            Line([x_base,  y * 0.18, 0], [x_tip,  y * 0.88, 0],
                  color=color, stroke_width=sw * 0.45),
-            Line([x_base, -y * 0.20, 0], [x_tip, -y, 0],
+            Line([x_base, -y * 0.18, 0], [x_tip, -y * 0.88, 0],
                  color=color, stroke_width=sw * 0.45),
         )
     tail = VGroup(top_lobe, bot_lobe, ray_lines)
@@ -156,7 +166,7 @@ def create_fish(color=BLUE_3B1B, stroke_width=2.5):
     # ── Spiny dorsal fin ──────────────────────────────────────────
     n_sp = 9
     sp_x = np.linspace(0.50, -0.48, n_sp)
-    sp_base_y = np.interp(sp_x, [-0.48, 0.50], [0.64, 0.74])
+    sp_base_y = np.interp(sp_x, [-0.48, 0.50], [0.61, 0.71])
     sp_h = np.array([0.26, 0.36, 0.43, 0.46, 0.44, 0.38, 0.30, 0.21, 0.12])
     sp_tip_y = sp_base_y + sp_h
 
@@ -176,7 +186,7 @@ def create_fish(color=BLUE_3B1B, stroke_width=2.5):
 
     # ── Soft dorsal fin ───────────────────────────────────────────
     s_x = np.linspace(-0.50, -0.90, 5)
-    s_base_y = np.interp(s_x, [-0.90, -0.50], [0.48, 0.64])
+    s_base_y = np.interp(s_x, [-0.90, -0.50], [0.45, 0.61])
     s_h = np.array([0.22, 0.20, 0.16, 0.11, 0.06])
     s_tip_y = s_base_y + s_h
 
@@ -207,16 +217,20 @@ def create_fish(color=BLUE_3B1B, stroke_width=2.5):
         np.column_stack([pec_raw, np.zeros(len(pec_raw))]))
 
     pec_fin = VGroup(pec_outline)
-    for t in np.linspace(0.15, 0.85, 5):
-        x_base = 0.82 - t * 0.38
-        y_base = -0.08 + t * (-0.20)
-        x_tip  = 0.46 - t * 0.08
-        y_tip  =  0.06 + t * (-0.46)
+    ray_base = np.array([0.78, -0.08, 0])
+    ray_targets = [
+        [0.66,  0.02, 0],
+        [0.56, -0.03, 0],
+        [0.52, -0.13, 0],
+        [0.56, -0.24, 0],
+        [0.66, -0.31, 0],
+    ]
+    for target in ray_targets:
         pec_fin.add(
-            Line([x_base, y_base, 0], [x_tip, y_tip, 0],
+            Line(ray_base, target,
                  color=color, stroke_width=sw * 0.40))
 
-    return VGroup(body, tail, eye, spiny_dorsal, soft_dorsal, pec_fin)
+    return VGroup(VGroup(body, mouth), tail, eye, spiny_dorsal, soft_dorsal, pec_fin)
 
 
 # ────────────────────────────────────────────────────────────────

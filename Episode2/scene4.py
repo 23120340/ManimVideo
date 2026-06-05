@@ -93,8 +93,8 @@ class Scene4BiLevel(Scene):
         )
 
         # ── The trick: single rollout ─────────────────────────────
-        trick_title = Text("The Trick: One Rollout, Two Gradients", font_size=30, color=GREEN_3B1B, weight=BOLD)
-        trick_title.to_edge(UP, buff=1.0)
+        trick_title = Text("The Trick: One Rollout, Two Gradients", font_size=28, color=GREEN_3B1B, weight=BOLD)
+        trick_title.to_edge(UP, buff=1.22)
         self.play(Write(trick_title, run_time=1.0, rate_func=smooth))
         self.wait(0.3)
 
@@ -203,16 +203,14 @@ class Scene4BiLevel(Scene):
             ), run_time=0.8),
         )
 
-        eq1 = MathTex(
-            r"\theta^* = \arg\max_\theta \, \mathbb{E}_\tau "
-            r"\left[ R(\tau;\, \theta,\, \varphi^*(\theta)) \right]",
+        eq1 = MarkupText(
+            "θ<sup>*</sup> = arg max<sub>θ</sub>  E<sub>τ</sub>[ R(τ; θ, φ<sup>*</sup>(θ)) ]",
             font_size=34, color=GRAY_LIGHT,
         )
         eq1.move_to(UP * 0.5)
 
-        eq2 = MathTex(
-            r"\nabla_\theta \mathcal{L}, \quad \nabla_\varphi \mathcal{L} \quad"
-            r"\longleftarrow \text{same backward pass}",
+        eq2 = MarkupText(
+            "∇<sub>θ</sub>L,  ∇<sub>φ</sub>L  ←  same backward pass",
             font_size=30, color=GRAY_LIGHT,
         )
         eq2.next_to(eq1, DOWN, buff=0.45)

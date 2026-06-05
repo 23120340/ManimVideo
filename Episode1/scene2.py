@@ -299,18 +299,83 @@ class Scene2EyeDiversity(Scene):
         )
         self.wait(0.5)
 
-        # Zoom-in callout: gương parabolic
+        # Zoom-in callout: scallop eyes focus primarily with a concave guanine
+        # mirror at the back of the eye, not with a strong lens.
         zoom_circle = Circle(
             radius=0.9, color=BLUE_3B1B, stroke_width=2,
         ).move_to(LEFT * 4.2 + UP * 1.5)
+        zc = zoom_circle.get_center()
+
+        pupil = Circle(
+            radius=0.11,
+            color=BLUE_3B1B,
+            fill_color=BLUE_3B1B,
+            fill_opacity=0.18,
+            stroke_width=1.5,
+        ).move_to(zc + UP * 0.53)
+
         mirror = Arc(
-            radius=0.5, angle=PI, start_angle=-PI / 2,
-            color=YELLOW_3B1B, stroke_width=2.5,
-        ).move_to(zoom_circle.get_center() + DOWN * 0.15)
-        reflect = Line(
-            mirror.point_from_proportion(0.5),
-            zoom_circle.get_center() + UP * 0.4,
-            color=YELLOW_3B1B, stroke_width=1.5, stroke_opacity=0.7,
+            radius=0.55,
+            angle=110 * DEGREES,
+            start_angle=215 * DEGREES,
+            color=YELLOW_3B1B,
+            stroke_width=4.0,
+        ).move_to(zc + DOWN * 0.03)
+
+        mirror_tiles = VGroup()
+        for a in np.linspace(222 * DEGREES, 318 * DEGREES, 7):
+            p = zc + DOWN * 0.03 + 0.55 * np.array([np.cos(a), np.sin(a), 0])
+            tangent = np.array([-np.sin(a), np.cos(a), 0])
+            mirror_tiles.add(
+                Line(
+                    p - tangent * 0.035,
+                    p + tangent * 0.035,
+                    color=BG_COLOR,
+                    stroke_width=1.1,
+                    stroke_opacity=0.85,
+                )
+            )
+
+        distal_retina = Arc(
+            radius=0.39,
+            angle=100 * DEGREES,
+            start_angle=220 * DEGREES,
+            color=ORANGE_3B1B,
+            stroke_width=2.0,
+            stroke_opacity=0.9,
+        ).move_to(zc + DOWN * 0.03)
+        proximal_retina = Arc(
+            radius=0.31,
+            angle=92 * DEGREES,
+            start_angle=224 * DEGREES,
+            color=GREEN_3B1B,
+            stroke_width=2.0,
+            stroke_opacity=0.85,
+        ).move_to(zc + DOWN * 0.02)
+
+        focal_dot = Dot(zc + DOWN * 0.20, radius=0.035, color=GRAY_LIGHT)
+        incoming_rays = VGroup(
+            Line(zc + UP * 0.80 + LEFT * 0.18, zc + DOWN * 0.34 + LEFT * 0.30,
+                 color=GRAY_MID, stroke_width=1.2, stroke_opacity=0.65),
+            Line(zc + UP * 0.80 + RIGHT * 0.18, zc + DOWN * 0.34 + RIGHT * 0.30,
+                 color=GRAY_MID, stroke_width=1.2, stroke_opacity=0.65),
+        )
+        reflected_rays = VGroup(
+            Line(zc + DOWN * 0.34 + LEFT * 0.30, focal_dot.get_center(),
+                 color=YELLOW_3B1B, stroke_width=1.2, stroke_opacity=0.75),
+            Line(zc + DOWN * 0.34 + RIGHT * 0.30, focal_dot.get_center(),
+                 color=YELLOW_3B1B, stroke_width=1.2, stroke_opacity=0.75),
+        )
+
+        scallop_eye_diagram = VGroup(
+            pupil,
+            incoming_rays,
+            reflected_rays,
+            distal_retina,
+            proximal_retina,
+            mirror,
+            mirror_tiles,
+            focal_dot,
         )
 
         zoom_label = Text(
@@ -328,7 +393,19 @@ class Scene2EyeDiversity(Scene):
 
         self.play(Create(zoom_line), run_time=0.5)
         self.play(Create(zoom_circle), run_time=0.6)
-        self.play(Create(mirror), Create(reflect), run_time=0.8)
+        self.play(
+            LaggedStart(
+                Create(pupil),
+                Create(incoming_rays),
+                Create(mirror),
+                Create(mirror_tiles),
+                Create(reflected_rays),
+                Create(VGroup(distal_retina, proximal_retina)),
+                FadeIn(focal_dot, scale=1.3),
+                lag_ratio=0.12,
+            ),
+            run_time=1.2,
+        )
         self.play(FadeIn(zoom_label), run_time=0.6)
 
         # Stat lớn — "200" số nên dùng Text bình thường
@@ -346,7 +423,7 @@ class Scene2EyeDiversity(Scene):
 
         card_group = VGroup(
             header, shell_group, ridges, eye_dots,
-            zoom_line, zoom_circle, mirror, reflect, zoom_label,
+            zoom_line, zoom_circle, scallop_eye_diagram, zoom_label,
             stat, stat_caption,
         )
         thumb = card_group.copy()
@@ -552,26 +629,42 @@ class Scene2EyeDiversity(Scene):
 
     def draw_butterfly(self, scale=1.0):
         """Bướm schematic 4 cánh."""
-        body = Line(UP * 0.4, DOWN * 0.4, color=GRAY_LIGHT, stroke_width=3).scale(scale)
+        body = Ellipse(
+            width=0.12, height=0.86, color=GRAY_LIGHT,
+            fill_color=GRAY_LIGHT, fill_opacity=0.9, stroke_width=1.4,
+        ).scale(scale)
+        head = Circle(
+            radius=0.07, color=GRAY_LIGHT,
+            fill_color=GRAY_LIGHT, fill_opacity=0.9, stroke_width=1.2,
+        ).move_to(UP * 0.48).scale(scale)
         wing_tl = Ellipse(
-            width=1.0, height=0.7, color=PURPLE_3B1B,
-            fill_opacity=0.5, stroke_width=2,
-        ).move_to(np.array([-0.5, 0.2, 0])).scale(scale)
+            width=0.86, height=0.58, color=PURPLE_3B1B,
+            fill_color=PURPLE_3B1B, fill_opacity=0.5, stroke_width=2,
+        ).move_to(np.array([-0.42, 0.22, 0])).rotate(18 * DEGREES).scale(scale)
         wing_tr = Ellipse(
-            width=1.0, height=0.7, color=PURPLE_3B1B,
-            fill_opacity=0.5, stroke_width=2,
-        ).move_to(np.array([0.5, 0.2, 0])).scale(scale)
+            width=0.86, height=0.58, color=PURPLE_3B1B,
+            fill_color=PURPLE_3B1B, fill_opacity=0.5, stroke_width=2,
+        ).move_to(np.array([0.42, 0.22, 0])).rotate(-18 * DEGREES).scale(scale)
         wing_bl = Ellipse(
-            width=0.7, height=0.5, color=PINK_3B1B,
-            fill_opacity=0.5, stroke_width=2,
-        ).move_to(np.array([-0.4, -0.3, 0])).scale(scale)
+            width=0.60, height=0.40, color=PINK_3B1B,
+            fill_color=PINK_3B1B, fill_opacity=0.5, stroke_width=2,
+        ).move_to(np.array([-0.34, -0.28, 0])).rotate(-18 * DEGREES).scale(scale)
         wing_br = Ellipse(
-            width=0.7, height=0.5, color=PINK_3B1B,
-            fill_opacity=0.5, stroke_width=2,
-        ).move_to(np.array([0.4, -0.3, 0])).scale(scale)
-        spot1 = Dot([-0.5, 0.2, 0], color=YELLOW_3B1B, radius=0.07).scale(scale)
-        spot2 = Dot([0.5, 0.2, 0], color=YELLOW_3B1B, radius=0.07).scale(scale)
-        return VGroup(wing_tl, wing_tr, wing_bl, wing_br, body, spot1, spot2)
+            width=0.60, height=0.40, color=PINK_3B1B,
+            fill_color=PINK_3B1B, fill_opacity=0.5, stroke_width=2,
+        ).move_to(np.array([0.34, -0.28, 0])).rotate(18 * DEGREES).scale(scale)
+        spot1 = Dot([-0.42 * scale, 0.25 * scale, 0], color=YELLOW_3B1B, radius=0.055 * scale)
+        spot2 = Dot([0.42 * scale, 0.25 * scale, 0], color=YELLOW_3B1B, radius=0.055 * scale)
+        antenna_l = Arc(radius=0.22 * scale, angle=65 * DEGREES, start_angle=95 * DEGREES,
+                        color=GRAY_LIGHT, stroke_width=1.5)
+        antenna_r = Arc(radius=0.22 * scale, angle=65 * DEGREES, start_angle=20 * DEGREES,
+                        color=GRAY_LIGHT, stroke_width=1.5)
+        antenna_l.move_to(UP * 0.58 * scale + LEFT * 0.12 * scale)
+        antenna_r.move_to(UP * 0.58 * scale + RIGHT * 0.12 * scale)
+        return VGroup(
+            wing_bl, wing_br, wing_tl, wing_tr,
+            body, head, antenna_l, antenna_r, spot1, spot2,
+        )
 
     # ------------------------------------------------------------
     # Recap grid 2x3

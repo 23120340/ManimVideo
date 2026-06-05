@@ -5,14 +5,14 @@ SCENE 3 — Cú twist: Sọc ngựa vằn (5:30 – 7:30)
 Tập 1 — "Cá chết vẫn biết bơi"
 
 Khoảnh khắc "aha" của tập này: trực giác con người đoán SAI vì sao ngựa vằn
-có sọc; câu trả lời thật là để đuổi muỗi.
+có sọc; câu trả lời thật là để giảm ruồi hút máu hạ cánh.
 
 A. Ngựa vằn + câu hỏi "Vì sao có sọc?"
 B. Hai đáp án phổ biến: 🦁 camouflage / 🐎 đàn lớn
 C. Góc nhìn sư tử: ngựa vằn từ xa = một khối xám mờ (sư tử thị lực ~1/4 người)
-D. Zoom muỗi đậu trên sọc → trượt đi (disorientation)
+D. Zoom côn trùng hút máu đậu trên sọc → trượt đi (disorientation)
 E. Nông dân sơn sọc lên... bò
-F. Title card: "ANSWER: MOSQUITOES"
+F. Title card: "ANSWER: BITING FLIES"
 G. VO chốt: trực giác sai vì cơ thể không tiến hoá để ta thấy đẹp
 
 Run:
@@ -87,7 +87,7 @@ class Scene3ZebraTwist(Scene):
         zebra_icon = (load_color_animal_svg("zebra.svg")
                       .scale_to_fit_height(1.1)
                       .set_stroke(width=0)
-                      .move_to(guess_box_right.get_left() + RIGHT * 0.9 + DOWN * 0.1))
+                      .move_to(guess_box_right.get_left() + RIGHT * 0.9))
 
         lion_bg = (RoundedRectangle(
                        width=1.35, height=1.35, corner_radius=0.18,
@@ -207,7 +207,7 @@ class Scene3ZebraTwist(Scene):
         self.play(FadeOut(c_panel), run_time=1.0)
 
         # ============================================================
-        # PART D — Zoom muỗi đậu lên sọc, trượt đi
+        # PART D — Zoom côn trùng hút máu đậu lên sọc, trượt đi
         # ============================================================
         # Vẽ một mảng sọc to chiếm giữa frame (zoom-in da ngựa)
         skin_stripes = VGroup()
@@ -237,11 +237,11 @@ class Scene3ZebraTwist(Scene):
         )
         self.wait(0.5)
 
-        # Muỗi: dot nhỏ + 2 cánh
-        mosquito = (load_color_animal_svg("mosquito.svg")
+        # Biting fly: dùng icon côn trùng đơn giản từ assets.
+        biting_fly = (load_color_animal_svg("mosquito.svg")
                     .scale_to_fit_height(0.5)
                     .move_to(np.array([-4, 2.5, 0])))
-        self.play(FadeIn(mosquito), run_time=0.5)
+        self.play(FadeIn(biting_fly), run_time=0.5)
 
         # Bay zigzag + cố đậu xuống — disorientation
         rng = np.random.default_rng(99)
@@ -255,18 +255,18 @@ class Scene3ZebraTwist(Scene):
             np.array([4.0, 2.5, 0]),
         ]
         for pos in target_path:
-            self.play(mosquito.animate.move_to(pos),
+            self.play(biting_fly.animate.move_to(pos),
                       run_time=0.5 + rng.uniform(-0.1, 0.1),
                       rate_func=smooth)
 
         slip_label = Text(
-            "Mosquitoes can't land — stripes confuse their compound eyes",
+            "Biting flies struggle to land on high-contrast stripes",
             font_size=22, color=YELLOW_3B1B, weight=BOLD,
         ).to_edge(DOWN, buff=0.4)
         self.play(Write(slip_label), run_time=1.5)
         self.wait(2.5)
 
-        d_pack = VGroup(skin_bg, skin_stripes, skin_label, mosquito, slip_label)
+        d_pack = VGroup(skin_bg, skin_stripes, skin_label, biting_fly, slip_label)
         self.play(FadeOut(d_pack), run_time=1.0)
 
         # ============================================================
@@ -300,14 +300,14 @@ class Scene3ZebraTwist(Scene):
         )
         self.wait(1.2)
 
-        # Stat: giảm bệnh do muỗi truyền
+        # Stat: giảm số lần ruồi hút máu hạ cánh.
         stat_box = RoundedRectangle(
             width=10.0, height=1.4, corner_radius=0.15,
             color=GREEN_3B1B, stroke_width=2,
         ).to_edge(DOWN, buff=0.5)
         stat_text = MarkupText(
-            'Stripe-painted farms  →  '
-            f'<span foreground="{GREEN_3B1B}"><b>fewer mosquito-borne diseases</b></span>',
+            'Stripe-painted cattle  →  '
+            f'<span foreground="{GREEN_3B1B}"><b>fewer biting-fly landings</b></span>',
             font_size=20, color=GRAY_LIGHT,
         ).move_to(stat_box.get_center())
 
@@ -318,11 +318,11 @@ class Scene3ZebraTwist(Scene):
         self.play(FadeOut(e_pack), run_time=1.0)
 
         # ============================================================
-        # PART F — Title card: "ANSWER: MOSQUITOES"
+        # PART F — Title card: "ANSWER: BITING FLIES"
         # ============================================================
         # Title card EN giữ font mặc định
         answer_title = Text(
-            "ANSWER:  MOSQUITOES",
+            "ANSWER:  BITING FLIES",
             font_size=56, color=YELLOW_3B1B, weight=BOLD,
         )
         underline = Line(
@@ -349,7 +349,7 @@ class Scene3ZebraTwist(Scene):
         )
 
         moral_l1 = Text(
-            "When guessing  «design intelligence»  by human intuition,",
+            'When guessing "design intelligence" by human intuition,',
             font_size=26, color=GRAY_LIGHT,
         )
         moral_l2 = Text(

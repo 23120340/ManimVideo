@@ -111,14 +111,10 @@ class Scene3CoDesign(Scene):
             run_time=1.0,
         )
 
-        lbl_grad_theta = MathTex(
-            r"\nabla_\theta", font_size=32, color=BLUE_3B1B
-        )
+        lbl_grad_theta = Text("grad theta", font_size=24, color=BLUE_3B1B)
         lbl_grad_theta.next_to(arr_to_theta.get_center(), LEFT, buff=0.18)
 
-        lbl_grad_phi = MathTex(
-            r"\nabla_\phi", font_size=32, color=GREEN_3B1B
-        )
+        lbl_grad_phi = Text("grad phi", font_size=24, color=GREEN_3B1B)
         lbl_grad_phi.next_to(arr_to_phi.get_center(), RIGHT, buff=0.18)
 
         self.play(

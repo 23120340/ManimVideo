@@ -1,3 +1,5 @@
+$ErrorActionPreference = "Stop"
+
 $scenes = @(
     @("scene1.py", "Scene1Hook"),
     @("scene2.py", "Scene2DiffSim"),
@@ -7,13 +9,19 @@ $scenes = @(
     @("scene5.py", "Scene5Outro")
 )
 
-foreach ($s in $scenes) {
-    Write-Host "`n==> Rendering $($s[1])..." -ForegroundColor Cyan
-    python -m manim -pqh $s[0] $s[1]
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "ERROR: $($s[1]) failed" -ForegroundColor Red
-        break
+Push-Location $PSScriptRoot
+try {
+    foreach ($s in $scenes) {
+        Write-Host "`n==> Rendering $($s[1])..." -ForegroundColor Cyan
+        python -m manim -pqh $s[0] $s[1]
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "ERROR: $($s[1]) failed" -ForegroundColor Red
+            exit $LASTEXITCODE
+        }
     }
-}
 
-Write-Host "`nDone!" -ForegroundColor Green
+    Write-Host "`nDone!" -ForegroundColor Green
+}
+finally {
+    Pop-Location
+}

@@ -351,15 +351,8 @@ class Scene6Cliffhanger(Scene):
         self.play(Write(ep2_main), run_time=1.5)
         self.play(FadeIn(ep2_en, shift=UP * 0.15), run_time=0.6)
         self.play(Create(ec_box), run_time=0.7)
-        self.wait(2.5)
+        self.wait(2.8)
 
-        coming_soon = Text(
-            "See you next time.",
-            font_size=20, color=GRAY_LIGHT, slant=ITALIC,
-        ).next_to(ec_box, DOWN, buff=0.5)
-        self.play(FadeIn(coming_soon), run_time=0.8)
-        self.wait(2.5)
-
-        self.play(FadeOut(VGroup(end_card, ec_box, coming_soon)),
+        self.play(FadeOut(VGroup(end_card, ec_box)),
                   run_time=1.5)
         self.wait(0.4)
