@@ -138,7 +138,7 @@ class Scene1Ep1Recap(Scene):
             Write(question, run_time=1.6, rate_func=smooth),
         )
         self.play(
-            question.animate.set_color(YELLOW_3B1B),
+            question.animate.set_color(emphasis_color_of(question)).scale(1.025),
             run_time=0.7, rate_func=smooth,
         )
         self.wait(2.5)

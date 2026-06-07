@@ -105,13 +105,21 @@ class Scene6SimToReal(Scene):
             sim_room.get_corner(DR) + LEFT * 0.3 + UP * 0.3,
         ]
 
+        sim_trail = VGroup()
+        current_pt = sim_path_pts[0]
         for pt in sim_path_pts[1:]:
-            self.play(sim_robot.animate.move_to(pt), run_time=0.4, rate_func=smooth)
+            segment = Line(current_pt, pt, color=BLUE_3B1B, stroke_width=2.2, stroke_opacity=0.75)
+            sim_trail.add(segment)
+            self.play(
+                Create(segment),
+                sim_robot.animate.move_to(pt),
+                sensor_pixels.animate.shift(pt - current_pt),
+                run_time=0.45,
+                rate_func=smooth,
+            )
             new_colors = np.random.default_rng(hash(tuple(pt)) % (2**31)).choice(sensor_colors, 4, replace=True)
-            for px, nc in zip(sensor_pixels, new_colors):
-                px.set_fill(color=nc)
-            sensor_pixels.shift(pt - sim_path_pts[0])
-            sim_path_pts[0] = pt
+            self.play(*[px.animate.set_fill(color=nc) for px, nc in zip(sensor_pixels, new_colors)], run_time=0.16)
+            current_pt = pt
         self.wait(0.3)
 
         # ── Real world panel (right) ──────────────────────────────
@@ -167,8 +175,19 @@ class Scene6SimToReal(Scene):
             real_room.get_center() + RIGHT * 0.5 + DOWN * 0.15,
             real_room.get_corner(DR) + LEFT * 0.3 + UP * 0.3,
         ]
+        real_trail = VGroup()
+        current_pt = real_path_pts[0]
         for pt in real_path_pts[1:]:
-            self.play(real_robot.animate.move_to(pt), run_time=0.5, rate_func=smooth)
+            segment = Line(current_pt, pt, color=ORANGE_3B1B, stroke_width=2.2, stroke_opacity=0.78)
+            real_trail.add(segment)
+            self.play(
+                Create(segment),
+                real_robot.animate.move_to(pt),
+                run_time=0.55,
+                rate_func=smooth,
+            )
+            current_pt = pt
+        self.play(Flash(goal_ball, color=emphasis_color_of(goal_ball), flash_radius=0.35), run_time=0.45)
         self.wait(0.3)
 
         # ── "Zero real-world fine-tuning" text ───────────────────
@@ -180,8 +199,8 @@ class Scene6SimToReal(Scene):
         # ── Fade panels, show training curve ─────────────────────
         self.play(
             FadeOut(VGroup(
-                sim_room, sim_floor, sim_robot, sensor_pixels,
-                real_room, real_floor, real_robot, goal_ball, goal_ball_lbl,
+                sim_room, sim_floor, sim_robot, sensor_pixels, sim_trail,
+                real_room, real_floor, real_robot, real_trail, goal_ball, goal_ball_lbl,
                 divider, sim_label, real_label, zero_ft,
             ), run_time=0.8),
         )
@@ -199,7 +218,7 @@ class Scene6SimToReal(Scene):
         x_axis = Arrow(ax_origin, ax_origin + RIGHT * ax_w, buff=0, color=GRAY_MID, stroke_width=2)
         y_axis = Arrow(ax_origin, ax_origin + UP * ax_h, buff=0, color=GRAY_MID, stroke_width=2)
 
-        x_lbl = Text("Episodes (×1000)", font_size=17, color=GRAY_MID)
+        x_lbl = Text("Episodes (x1000)", font_size=17, color=GRAY_MID)
         x_lbl.next_to(x_axis, DOWN, buff=0.15).shift(RIGHT * 0.5)
 
         y_lbl = Text("Loss", font_size=17, color=GRAY_MID)
@@ -235,6 +254,11 @@ class Scene6SimToReal(Scene):
         curve_vmob.set_points_smoothly([np.array([*p, 0]) if len(p) == 2 else p for p in curve_pts])
 
         self.play(Create(curve_vmob, run_time=2.5, rate_func=smooth))
+        train_marker = Dot(curve_pts[0], radius=0.07, color=YELLOW_3B1B)
+        self.play(FadeIn(train_marker, scale=0.8), run_time=0.20)
+        self.play(MoveAlongPath(train_marker, curve_vmob), run_time=1.4, rate_func=smooth)
+        self.play(Flash(train_marker, color=emphasis_color_of(train_marker), flash_radius=0.30), run_time=0.45)
+        self.remove(train_marker)
         self.wait(0.3)
 
         self.wait(0.4)

@@ -102,8 +102,8 @@ class Scene1MainQuestion(Scene):
         )
         nn_group.scale(0.85).move_to(LEFT * 3.6 + DOWN * 0.4)
 
-        theta_brain = MarkupText(
-            'θ<sub>brain</sub>', font_size=44, color=YELLOW_3B1B,
+        theta_brain = MathTex(
+            r"\theta_{\mathrm{brain}}", font_size=44, color=YELLOW_3B1B,
         ).next_to(nn_group, UP, buff=0.5)
 
         fast_label = Text(
@@ -127,8 +127,8 @@ class Scene1MainQuestion(Scene):
             for off in param_offsets
         ])
 
-        theta_body = MarkupText(
-            'θ<sub>body</sub>', font_size=44, color=YELLOW_3B1B,
+        theta_body = MathTex(
+            r"\theta_{\mathrm{body}}", font_size=44, color=YELLOW_3B1B,
         ).next_to(body_outline, UP, buff=0.5)
         theta_body.align_to(theta_brain, UP)
 
@@ -163,7 +163,7 @@ class Scene1MainQuestion(Scene):
             idxs = rng.choice(len(nn_edges), size=8, replace=False)
             flashing = [nn_edges[i] for i in idxs]
             self.play(
-                *[e.animate.set_stroke(YELLOW_3B1B, width=2.6, opacity=1.0)
+                *[e.animate.set_stroke(emphasis_color_of(e), width=2.6, opacity=1.0)
                   for e in flashing],
                 run_time=0.16, rate_func=rush_into,
             )
@@ -180,13 +180,14 @@ class Scene1MainQuestion(Scene):
         # ============================================================
         # PART F — Đóng
         # ============================================================
-        unifying = MarkupText(
-            'θ = (θ<sub>brain</sub>, θ<sub>body</sub>)',
-            font_size=46, color=GRAY_LIGHT,
+        unifying = MathTex(
+            r"\theta=(\theta_{\mathrm{brain}},\theta_{\mathrm{body}})",
+            font_size=46,
+            color=GRAY_LIGHT,
         ).to_edge(UP, buff=0.5)
 
         box = SurroundingRectangle(
-            unifying, color=YELLOW_3B1B,
+            unifying, color=emphasis_color_of(unifying),
             buff=0.25, stroke_width=2, stroke_opacity=0.85,
         )
 

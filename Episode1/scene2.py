@@ -541,9 +541,10 @@ class Scene2EyeDiversity(Scene):
         self.play(Write(tarsier_label), run_time=0.6)
         self.wait(0.8)
 
-        eq = MarkupText(
-            'eye  <span foreground="' + YELLOW_3B1B + '">≈</span>  brain',
-            font_size=40, color=GRAY_LIGHT,
+        eq = MathTex(
+            r"\mathrm{eye}\approx\mathrm{brain}",
+            font_size=40,
+            color=GRAY_LIGHT,
         ).to_edge(DOWN, buff=1.2)
         caption = Text(
             "the cost of hunting at night",

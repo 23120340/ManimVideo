@@ -18,6 +18,13 @@ from common import *
 import numpy as np
 
 
+def anchored_cone(origin, angle=0, fov=45 * DEGREES, length=0.78, color=GREEN_3B1B, opacity=0.22):
+    p0 = np.array(origin)
+    p1 = p0 + length * np.array([np.cos(angle - fov / 2), np.sin(angle - fov / 2), 0])
+    p2 = p0 + length * np.array([np.cos(angle + fov / 2), np.sin(angle + fov / 2), 0])
+    return Polygon(p0, p1, p2, color=color, stroke_width=1.5, fill_color=color, fill_opacity=opacity)
+
+
 class Scene2Photoreceptor(Scene):
     def construct(self):
         self.camera.background_color = BG_COLOR
@@ -32,7 +39,7 @@ class Scene2Photoreceptor(Scene):
         rng = np.random.default_rng(31)
         palette = [BLUE_3B1B, GREEN_3B1B, TEAL_EP2, PURPLE_3B1B, ORANGE_3B1B]
 
-        cell = 0.155
+        cell = 0.18
         grid_group = VGroup()
         for r in range(10):
             for c in range(10):
@@ -44,7 +51,7 @@ class Scene2Photoreceptor(Scene):
                 )
                 sq.move_to(RIGHT * c * cell + DOWN * r * cell)
                 grid_group.add(sq)
-        grid_group.move_to(LEFT * 3.5 + DOWN * 0.1)
+        grid_group.move_to(LEFT * 3.75 + DOWN * 0.05)
 
         self.play(
             LaggedStart(
@@ -62,7 +69,7 @@ class Scene2Photoreceptor(Scene):
             for c in range(3, 6)
         ])
         surround_rect = SurroundingRectangle(
-            patch_cells, color=YELLOW_3B1B, stroke_width=2.8, buff=0.03,
+            patch_cells, color=emphasis_color_of(patch_cells, fallback=BLUE_3B1B), stroke_width=2.8, buff=0.03,
         )
         self.play(
             Create(surround_rect, run_time=0.9, rate_func=smooth),
@@ -75,13 +82,13 @@ class Scene2Photoreceptor(Scene):
             fill_color=TEAL_EP2, fill_opacity=0.75,
             stroke_color=TEAL_EP2, stroke_width=2.5,
         )
-        receptor_sq.move_to(RIGHT * 0.5 + DOWN * 0.1)
+        receptor_sq.move_to(RIGHT * 0.65 + DOWN * 0.05)
         
         arrow_cam = Arrow(
             surround_rect.get_right() + RIGHT * 0.1,
             receptor_sq.get_left(),                   # ← thay đổi ở đây
-            color=GRAY_LIGHT, buff=0.1, stroke_width=2.5,
-            max_tip_length_to_length_ratio=0.3,
+            color=GRAY_LIGHT, buff=0.1, stroke_width=2.3,
+            max_tip_length_to_length_ratio=0.08,
         )
 
         receptor_label = Text(
@@ -100,14 +107,14 @@ class Scene2Photoreceptor(Scene):
         # ── Fade grid / receptor to upper area, make room ─────────
         grid_label_group = VGroup(grid_group, surround_rect, arrow_cam, receptor_sq, receptor_label)
         self.play(
-            grid_label_group.animate.scale(0.72).to_corner(UL, buff=0.9).shift(DOWN * 0.4),
+            grid_label_group.animate.scale(0.92).to_corner(UL, buff=0.62).shift(DOWN * 0.30),
             run_time=0.9, rate_func=smooth,
         )
         self.wait(0.2)
 
         # ── 3 design parameters ───────────────────────────────────
         params_title = Text("3 Design Parameters:", font_size=28, color=GRAY_LIGHT, weight=BOLD)
-        params_title.move_to(LEFT * 1.0 + UP * 1.1)
+        params_title.move_to(LEFT * 0.35 + UP * 1.05)
         self.play(FadeIn(params_title, shift=UP * 0.2), run_time=0.7)
 
         # ① Position
@@ -121,7 +128,7 @@ class Scene2Photoreceptor(Scene):
             width=0.8, height=1.1, corner_radius=0.12,
             color=GRAY_DIM, stroke_width=1.8, fill_opacity=0,
         )
-        body_outline.move_to(RIGHT * 5.5 + ORIGIN)
+        body_outline.scale(1.12).move_to(RIGHT * 5.00 + DOWN * 0.05)
         pos_dot = Dot(body_outline.get_top() + DOWN * 0.15, radius=0.08, color=YELLOW_3B1B)
 
         self.play(
@@ -144,20 +151,21 @@ class Scene2Photoreceptor(Scene):
         param2 = VGroup(param2_num, param2_txt).arrange(RIGHT, buff=0.15)
         param2.next_to(param1, DOWN, buff=0.28, aligned_edge=LEFT)
 
+        sensor_anchor = pos_dot.get_center()
         dir_arrow = Arrow(
-            body_outline.get_center(),
-            body_outline.get_center() + UP * 0.5,
-            color=ORANGE_3B1B, buff=0, stroke_width=2.5,
-            max_tip_length_to_length_ratio=0.35,
+            sensor_anchor,
+            sensor_anchor + RIGHT * 0.56,
+            color=ORANGE_3B1B, buff=0, stroke_width=2.3,
+            max_tip_length_to_length_ratio=0.10,
         )
         self.play(
             FadeIn(param2, shift=LEFT * 0.2, run_time=0.7),
             Create(dir_arrow, run_time=0.8),
         )
         # Rotate the arrow through angles
-        for angle in [45 * DEGREES, 90 * DEGREES, 135 * DEGREES, 0 * DEGREES]:
+        for angle in [35 * DEGREES, -28 * DEGREES, 18 * DEGREES, 0 * DEGREES]:
             self.play(
-                Rotate(dir_arrow, angle=angle - dir_arrow.get_angle(), about_point=body_outline.get_center()),
+                Rotate(dir_arrow, angle=angle - dir_arrow.get_angle(), about_point=sensor_anchor),
                 run_time=0.45, rate_func=smooth,
             )
         self.wait(0.2)
@@ -168,33 +176,22 @@ class Scene2Photoreceptor(Scene):
         param3 = VGroup(param3_num, param3_txt).arrange(RIGHT, buff=0.15)
         param3.next_to(param2, DOWN, buff=0.28, aligned_edge=LEFT)
 
-        fov_sector = Sector(
-            radius=0.55, angle=PI / 5,
-            start_angle=PI / 2 - PI / 10,
-            color=GREEN_3B1B, fill_opacity=0.28, stroke_width=1.5,
-        )
-        fov_sector.move_to(body_outline.get_center() + UP * 0.1)
+        fov_sector = anchored_cone(sensor_anchor, angle=0, fov=PI / 7, length=0.74, opacity=0.24)
 
         self.play(
             FadeIn(param3, shift=LEFT * 0.2, run_time=0.7),
-            FadeIn(fov_sector, scale=0.4, run_time=0.7),
+            FadeIn(fov_sector, scale=0.7, run_time=0.7),
         )
         # Expand and contract
         self.play(
             fov_sector.animate.become(
-                Sector(radius=0.7, angle=PI / 2.2,
-                       start_angle=PI / 2 - PI / 4.4,
-                       color=GREEN_3B1B, fill_opacity=0.22, stroke_width=1.5,
-                       ).move_to(body_outline.get_center() + UP * 0.1)
+                anchored_cone(sensor_anchor, angle=0, fov=PI / 2.2, length=0.82, opacity=0.20)
             ),
             run_time=0.7, rate_func=smooth,
         )
         self.play(
             fov_sector.animate.become(
-                Sector(radius=0.35, angle=PI / 8,
-                       start_angle=PI / 2 - PI / 16,
-                       color=GREEN_3B1B, fill_opacity=0.35, stroke_width=1.5,
-                       ).move_to(body_outline.get_center() + UP * 0.1)
+                anchored_cone(sensor_anchor, angle=0, fov=PI / 8, length=0.68, opacity=0.30)
             ),
             run_time=0.7, rate_func=smooth,
         )
@@ -268,9 +265,9 @@ class Scene2Photoreceptor(Scene):
 
         # Arrows showing progression
         arr1 = Arrow(robot_groups[0].get_right(), robot_groups[1].get_left(),
-                     color=GRAY_MID, buff=0.1, stroke_width=2)
+                     color=GRAY_MID, buff=0.1, stroke_width=2, max_tip_length_to_length_ratio=0.09)
         arr2 = Arrow(robot_groups[1].get_right(), robot_groups[2].get_left(),
-                     color=GRAY_MID, buff=0.1, stroke_width=2)
+                     color=GRAY_MID, buff=0.1, stroke_width=2, max_tip_length_to_length_ratio=0.09)
         self.play(
             Create(arr1, run_time=0.5),
             Create(arr2, run_time=0.5),

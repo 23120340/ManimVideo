@@ -23,9 +23,11 @@ renders/
 concat_list.txt
 list.txt
 /ManimVideo_full*.mp4
+/ManimVideo_*preview*.mp4
 /preview_full*.mp4
 /ep*_full*.mp4
 /*_full*.mp4
+/*_preview*.mp4
 
 # Environment/local files
 .venv/

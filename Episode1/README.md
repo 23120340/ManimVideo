@@ -120,17 +120,17 @@ All scenes follow a single rule — **no `font=` parameter ever**:
 # Plain text (labels, captions, questions)
 label = Text("BRAIN", font_size=28, color=RED_BRAIN, weight=BOLD)
 
-# Subscript / superscript (formulas only)
-theta = MarkupText('θ<sub>brain</sub>', font_size=44, color=YELLOW_3B1B)
+# Mathematical labels / formulas
+theta = MathTex(r"\theta_{\mathrm{brain}}", font_size=44, color=YELLOW_3B1B)
 
-# Inline color span inside markup
-eq = MarkupText(
-    'eye  <span foreground="#FBBF24">≈</span>  brain',
+# Inline color span inside prose
+note = MarkupText(
+    'focus on <span foreground="#FBBF24">structure</span>, not decoration',
     font_size=40, color=GRAY_LIGHT,
 )
 ```
 
-The Pango system default font (usually DejaVu Sans on Linux/Windows) supports full Unicode including Greek (θ, α, β). Setting `font=` per-call is unnecessary and was removed.
+The Pango system default font (usually DejaVu Sans on Linux/Windows) supports full Unicode including Greek (θ, α, β). Use `MathTex` for formulas, and do not set `font=` per call.
 
 ---
 

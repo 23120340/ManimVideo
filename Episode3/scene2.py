@@ -48,7 +48,7 @@ def build_pipeline(y, arrow_color, arrow_dir=1):
                 buff=0.05,
                 color=arrow_color,
                 stroke_width=2.2,
-                max_tip_length_to_length_ratio=0.3,
+                max_tip_length_to_length_ratio=0.09,
             )
         else:
             arr = Arrow(
@@ -57,7 +57,7 @@ def build_pipeline(y, arrow_color, arrow_dir=1):
                 buff=0.05,
                 color=arrow_color,
                 stroke_width=2.5,
-                max_tip_length_to_length_ratio=0.3,
+                max_tip_length_to_length_ratio=0.09,
             )
         arrows.add(arr)
     return boxes, arrows

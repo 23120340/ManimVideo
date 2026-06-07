@@ -43,10 +43,16 @@ class Scene4BiLevel(Scene):
         )
         inner_ellipse.move_to(DOWN * 0.5)
 
-        outer_lbl = Text("θ  —  sensor design", font_size=24, color=BLUE_3B1B, weight=BOLD)
+        outer_lbl = VGroup(
+            MathTex(r"\theta", font_size=30, color=BLUE_3B1B),
+            Text("sensor design", font_size=22, color=BLUE_3B1B, weight=BOLD),
+        ).arrange(RIGHT, buff=0.16)
         outer_lbl.move_to(outer_ellipse.get_top() + UP * 0.28)
 
-        inner_lbl = Text("φ  —  control policy", font_size=22, color=GREEN_3B1B, weight=BOLD)
+        inner_lbl = VGroup(
+            MathTex(r"\phi", font_size=28, color=GREEN_3B1B),
+            Text("control policy", font_size=20, color=GREEN_3B1B, weight=BOLD),
+        ).arrange(RIGHT, buff=0.14)
         inner_lbl.move_to(inner_ellipse.get_center())
 
         outer_loop_label = Text("OUTER LOOP", font_size=16, color=BLUE_3B1B)
@@ -145,11 +151,17 @@ class Scene4BiLevel(Scene):
 
         # Legend — ngay dưới timeline
         leg_d = Square(side_length=0.18, fill_color=BLUE_3B1B, fill_opacity=1, stroke_width=0)
-        leg_d_lbl = Text("design action (θ)", font_size=17, color=BLUE_3B1B)
+        leg_d_lbl = VGroup(
+            Text("design action", font_size=17, color=BLUE_3B1B),
+            MathTex(r"(\theta)", font_size=22, color=BLUE_3B1B),
+        ).arrange(RIGHT, buff=0.06)
         leg_d_grp = VGroup(leg_d, leg_d_lbl).arrange(RIGHT, buff=0.1)
 
         leg_c = Square(side_length=0.18, fill_color=GREEN_3B1B, fill_opacity=1, stroke_width=0)
-        leg_c_lbl = Text("control action (φ)", font_size=17, color=GREEN_3B1B)
+        leg_c_lbl = VGroup(
+            Text("control action", font_size=17, color=GREEN_3B1B),
+            MathTex(r"(\phi)", font_size=22, color=GREEN_3B1B),
+        ).arrange(RIGHT, buff=0.06)
         leg_c_grp = VGroup(leg_c, leg_c_lbl).arrange(RIGHT, buff=0.1)
 
         legend_grp = VGroup(leg_d_grp, leg_c_grp).arrange(RIGHT, buff=0.6)
@@ -166,21 +178,21 @@ class Scene4BiLevel(Scene):
             RIGHT * 3.8 + UP * grad_row_y1,
             LEFT * 0.2 + UP * grad_row_y1,
             color=BLUE_3B1B, buff=0, stroke_width=2.8,
-            max_tip_length_to_length_ratio=0.15,
+            max_tip_length_to_length_ratio=0.08,
         )
-        gt_lbl = Text("∇θ", font_size=22, color=BLUE_3B1B)
+        gt_lbl = MathTex(r"\nabla_{\theta}", font_size=26, color=BLUE_3B1B)
         gt_lbl.next_to(grad_theta, UP, buff=0.08)
 
         grad_phi = Arrow(
             LEFT * 3.8 + UP * grad_row_y2,
             RIGHT * 0.2 + UP * grad_row_y2,
             color=GREEN_3B1B, buff=0, stroke_width=2.8,
-            max_tip_length_to_length_ratio=0.15,
+            max_tip_length_to_length_ratio=0.08,
         )
-        gp_lbl = Text("∇φ", font_size=22, color=GREEN_3B1B)
+        gp_lbl = MathTex(r"\nabla_{\phi}", font_size=26, color=GREEN_3B1B)
         gp_lbl.next_to(grad_phi, DOWN, buff=0.08)
 
-        same_pass_lbl = Text("← same backward pass →", font_size=18, color=YELLOW_3B1B)
+        same_pass_lbl = MathTex(r"\leftarrow\ \text{same backward pass}\ \rightarrow", font_size=24, color=YELLOW_3B1B)
         same_pass_lbl.next_to(gp_lbl, DOWN, buff=0.18)
 
         self.play(
@@ -203,16 +215,20 @@ class Scene4BiLevel(Scene):
             ), run_time=0.8),
         )
 
-        eq1 = MarkupText(
-            "θ<sup>*</sup> = arg max<sub>θ</sub>  E<sub>τ</sub>[ R(τ; θ, φ<sup>*</sup>(θ)) ]",
-            font_size=34, color=GRAY_LIGHT,
+        eq1 = MathTex(
+            r"\theta^*=\arg\max_{\theta}\;\mathbb{E}_{\tau}\left[R(\tau;\theta,\phi^*(\theta))\right]",
+            font_size=36,
+            color=GRAY_LIGHT,
         )
+        eq1.scale_to_fit_width(11.0)
         eq1.move_to(UP * 0.5)
 
-        eq2 = MarkupText(
-            "∇<sub>θ</sub>L,  ∇<sub>φ</sub>L  ←  same backward pass",
-            font_size=30, color=GRAY_LIGHT,
+        eq2 = MathTex(
+            r"\nabla_{\theta}L,\;\nabla_{\phi}L\;\leftarrow\;\text{same backward pass}",
+            font_size=32,
+            color=GRAY_LIGHT,
         )
+        eq2.scale_to_fit_width(9.4)
         eq2.next_to(eq1, DOWN, buff=0.45)
 
         self.play(Write(eq1, run_time=1.6, rate_func=smooth))

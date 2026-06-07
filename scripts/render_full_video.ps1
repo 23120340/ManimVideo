@@ -2,6 +2,9 @@ param(
     [ValidateSet("l", "m", "h", "k")]
     [string]$Quality = "h",
 
+    [ValidateSet("Current", "Longform")]
+    [string]$Version = "Current",
+
     [string]$Output = "ManimVideo_full.mp4",
 
     [string]$PythonExe = "",
@@ -11,7 +14,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$scenes = @(
+$currentScenes = @(
     @{ Episode = "Episode1"; File = "scene0.py"; Class = "Scene0ColdOpen" },
     @{ Episode = "Episode1"; File = "scene1.py"; Class = "Scene1MainQuestion" },
     @{ Episode = "Episode1"; File = "scene2.py"; Class = "Scene2EyeDiversity" },
@@ -36,6 +39,80 @@ $scenes = @(
     @{ Episode = "Episode3"; File = "scene4.py"; Class = "Scene4DiffuseBot" },
     @{ Episode = "Episode3"; File = "scene5.py"; Class = "Scene5Outro" }
 )
+
+$longformScenes = @(
+    @{ Episode = "Episode1"; File = "scene0.py"; Class = "Scene0ColdOpen" },
+    @{ Episode = "Episode1"; File = "scene1.py"; Class = "Scene1MainQuestion" },
+    @{ Episode = "Episode1"; File = "scene1b_design_loop.py"; Class = "Scene1BDesignLoop" },
+    @{ Episode = "Episode1"; File = "scene8_seminar_deep_dive.py"; Class = "Scene8PassiveDynamicsDeepDive" },
+    @{ Episode = "Episode1"; File = "scene8_seminar_deep_dive.py"; Class = "Scene9EcologicalFramingDeepDive" },
+    @{ Episode = "Episode1"; File = "scene2.py"; Class = "Scene2EyeDiversity" },
+    @{ Episode = "Episode1"; File = "scene2b_vision_tradeoffs.py"; Class = "Scene2BVisionTradeoffs" },
+    @{ Episode = "Episode1"; File = "scene2c_visual_acuity.py"; Class = "Scene2CVisualAcuity" },
+    @{ Episode = "Episode1"; File = "scene8_seminar_deep_dive.py"; Class = "Scene10BiologicalVisionDeepDive" },
+    @{ Episode = "Episode1"; File = "scene8_seminar_deep_dive.py"; Class = "Scene11OceanAcuityDeepDive" },
+    @{ Episode = "Episode1"; File = "scene3.py"; Class = "Scene3ZebraTwist" },
+    @{ Episode = "Episode1"; File = "scene3b_ecological_caveat.py"; Class = "Scene3BEcologicalCaveat" },
+    @{ Episode = "Episode1"; File = "scene4.py"; Class = "Scene4MathFormulation" },
+    @{ Episode = "Episode1"; File = "scene4b_utility_context.py"; Class = "Scene4BUtilityContext" },
+    @{ Episode = "Episode1"; File = "scene5.py"; Class = "Scene5CarlSims" },
+    @{ Episode = "Episode1"; File = "scene6.py"; Class = "Scene6Cliffhanger" },
+    @{ Episode = "Episode1"; File = "scene7.py"; Class = "Scene7Outro" },
+
+    @{ Episode = "Episode2"; File = "scene1.py"; Class = "Scene1Ep1Recap" },
+    @{ Episode = "Episode2"; File = "scene2.py"; Class = "Scene2Photoreceptor" },
+    @{ Episode = "Episode2"; File = "scene8_seminar_deep_dive.py"; Class = "Scene8PRSignalDeepDive" },
+    @{ Episode = "Episode2"; File = "scene2c_camera_baseline.py"; Class = "Scene2CCameraBaseline" },
+    @{ Episode = "Episode2"; File = "scene8_seminar_deep_dive.py"; Class = "Scene9CameraBaselineDeepDive" },
+    @{ Episode = "Episode2"; File = "scene2b_design_vector.py"; Class = "Scene2BDesignVector" },
+    @{ Episode = "Episode2"; File = "scene8_seminar_deep_dive.py"; Class = "Scene12DesignVectorDeepDive" },
+    @{ Episode = "Episode2"; File = "scene3b_task_definitions.py"; Class = "Scene3BTaskDefinitions" },
+    @{ Episode = "Episode2"; File = "scene8_seminar_deep_dive.py"; Class = "Scene10PointGoalNavDeepDive" },
+    @{ Episode = "Episode2"; File = "scene8_seminar_deep_dive.py"; Class = "Scene11TargetNavDeepDive" },
+    @{ Episode = "Episode2"; File = "scene3c_baselines.py"; Class = "Scene3CBaselines" },
+    @{ Episode = "Episode2"; File = "scene3.py"; Class = "Scene3Navigation" },
+    @{ Episode = "Episode2"; File = "scene4b_design_optimization.py"; Class = "Scene4BDesignOptimization" },
+    @{ Episode = "Episode2"; File = "scene8_seminar_deep_dive.py"; Class = "Scene13JointOptimizationDeepDive" },
+    @{ Episode = "Episode2"; File = "scene4c_joint_training.py"; Class = "Scene4CJointTraining" },
+    @{ Episode = "Episode2"; File = "scene4.py"; Class = "Scene4BiLevel" },
+    @{ Episode = "Episode2"; File = "scene5.py"; Class = "Scene5Surprise" },
+    @{ Episode = "Episode2"; File = "scene5d_bad_designs.py"; Class = "Scene5DBadDesigns" },
+    @{ Episode = "Episode2"; File = "scene5b_evidence.py"; Class = "Scene5BEvidence" },
+    @{ Episode = "Episode2"; File = "scene8_seminar_deep_dive.py"; Class = "Scene14EvidenceDeepDive" },
+    @{ Episode = "Episode2"; File = "scene5c_human_survey.py"; Class = "Scene5CHumanSurvey" },
+    @{ Episode = "Episode2"; File = "scene6b_target_check.py"; Class = "Scene6BTargetCheck" },
+    @{ Episode = "Episode2"; File = "scene6c_real_world_setup.py"; Class = "Scene6CRealWorldSetup" },
+    @{ Episode = "Episode2"; File = "scene8_seminar_deep_dive.py"; Class = "Scene15SurveyTransferDeepDive" },
+    @{ Episode = "Episode2"; File = "scene6d_pr_limitations.py"; Class = "Scene6DPRLimitations" },
+    @{ Episode = "Episode2"; File = "scene6.py"; Class = "Scene6SimToReal" },
+    @{ Episode = "Episode2"; File = "scene7.py"; Class = "Scene7Cliffhanger" },
+
+    @{ Episode = "Episode3"; File = "scene1.py"; Class = "Scene1Hook" },
+    @{ Episode = "Episode3"; File = "scene6_seminar_deep_dive.py"; Class = "Scene6ClassicalDesignDeepDive" },
+    @{ Episode = "Episode3"; File = "scene2.py"; Class = "Scene2DiffSim" },
+    @{ Episode = "Episode3"; File = "scene2b_chainqueen_limits.py"; Class = "Scene2BChainQueenLimits" },
+    @{ Episode = "Episode3"; File = "scene2c_forward_backward.py"; Class = "Scene2CForwardBackward" },
+    @{ Episode = "Episode3"; File = "scene6_seminar_deep_dive.py"; Class = "Scene7DifferentiableSimulationDeepDive" },
+    @{ Episode = "Episode3"; File = "scene3.py"; Class = "Scene3CoDesign" },
+    @{ Episode = "Episode3"; File = "scene3b_body_parameters.py"; Class = "Scene3BBodyParameters" },
+    @{ Episode = "Episode3"; File = "scene6_seminar_deep_dive.py"; Class = "Scene8CoDesignDeepDive" },
+    @{ Episode = "Episode3"; File = "scene_attractor.py"; Class = "SceneAttractor" },
+    @{ Episode = "Episode3"; File = "scene4.py"; Class = "Scene4DiffuseBot" },
+    @{ Episode = "Episode3"; File = "scene4c_diffusion_basics.py"; Class = "Scene4CDiffusionBasics" },
+    @{ Episode = "Episode3"; File = "scene4b_diffusion_constraints.py"; Class = "Scene4BDiffusionConstraints" },
+    @{ Episode = "Episode3"; File = "scene4d_robotization_pipeline.py"; Class = "Scene4DRobotizationPipeline" },
+    @{ Episode = "Episode3"; File = "scene6_seminar_deep_dive.py"; Class = "Scene9DiffuseBotDeepDive" },
+    @{ Episode = "Episode3"; File = "scene5b_limitations.py"; Class = "Scene5BLimitations" },
+    @{ Episode = "Episode3"; File = "scene6_seminar_deep_dive.py"; Class = "Scene10FabricationSynthesisDeepDive" },
+    @{ Episode = "Episode3"; File = "scene5.py"; Class = "Scene5Outro" }
+)
+
+if ($Version -eq "Longform") {
+    $scenes = $longformScenes
+}
+else {
+    $scenes = $currentScenes
+}
 
 $qualityFlag = "-q$Quality"
 $qualityDirs = @{
@@ -113,6 +190,7 @@ function Get-RenderedVideoPath($scene) {
 
 $python = Resolve-PythonExe
 Write-Host "Using Python: $python" -ForegroundColor DarkGray
+Write-Host "Render version: $Version ($($scenes.Count) scenes)" -ForegroundColor DarkGray
 
 if (-not $SkipRender) {
     for ($i = 0; $i -lt $scenes.Count; $i++) {

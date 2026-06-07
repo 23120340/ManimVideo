@@ -157,13 +157,14 @@ class Scene5CarlSims(Scene):
         # Highlight con thắng (di chuyển xa nhất)
         winner_idx = success_distances.index(max(success_distances))
         winner = creatures[winner_idx]
+        winner_emphasis = emphasis_color_of(winner, fallback=GREEN_3B1B)
         winner_glow = Circle(
-            radius=0.6, color=YELLOW_3B1B, stroke_width=3,
+            radius=0.6, color=winner_emphasis, stroke_width=3,
             fill_opacity=0.0,
         ).move_to(winner.get_center())
         winner_label = Text(
             "WINNER",
-            font_size=18, color=YELLOW_3B1B, weight=BOLD,
+            font_size=18, color=winner_emphasis, weight=BOLD,
         ).next_to(winner_glow, UP, buff=0.2)
 
         self.play(Create(winner_glow), Write(winner_label), run_time=1.0)

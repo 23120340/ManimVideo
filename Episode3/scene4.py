@@ -142,12 +142,30 @@ class Scene4DiffuseBot(Scene):
             fill_opacity=1,
         )
         box3_label = Text("+ physics", font_size=15, color=ORANGE_3B1B)
-        box3_math = Text("grad theta L", font_size=20, color=ORANGE_3B1B)
+        box3_math = MathTex(
+            r"\nabla_{\theta} L",
+            font_size=28,
+            color=ORANGE_3B1B,
+        )
         box3_inner = VGroup(box3_label, box3_math).arrange(DOWN, buff=0.10)
         box3_inner.move_to(box3_rect.get_center())
         box3 = VGroup(box3_rect, box3_inner)
 
-        box4 = make_pipeline_box("Robot\ndesign θ", TEAL_EP2)
+        box4_rect = RoundedRectangle(
+            width=2.4,
+            height=1.1,
+            corner_radius=0.13,
+            color=TEAL_EP2,
+            stroke_width=2.5,
+            fill_color=BG_COLOR,
+            fill_opacity=1,
+        )
+        box4_inner = VGroup(
+            Text("Robot design", font_size=15, color=TEAL_EP2),
+            MathTex(r"\theta", font_size=30, color=TEAL_EP2),
+        ).arrange(DOWN, buff=0.06)
+        box4_inner.move_to(box4_rect.get_center())
+        box4 = VGroup(box4_rect, box4_inner)
 
         pipeline = VGroup(box1, box2, box3, box4).arrange(RIGHT, buff=0.45)
         pipeline.move_to(UP * 0.5)
@@ -164,7 +182,7 @@ class Scene4DiffuseBot(Scene):
                 buff=0.05,
                 color=GRAY_MID,
                 stroke_width=2.5,
-                max_tip_length_to_length_ratio=0.3,
+                max_tip_length_to_length_ratio=0.09,
             )
             arrows.add(arr)
 

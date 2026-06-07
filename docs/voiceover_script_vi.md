@@ -3,7 +3,9 @@
 File này dùng để thu âm lồng tiếng cho bản render all hiện tại.
 
 - Video mục tiêu: `ManimVideo_full.mp4`
-- Tổng thời lượng theo các scene render mới nhất: khoảng **11:21.4**
+- Tổng thời lượng theo preview longform mới nhất: khoảng **55:02.95**
+- Bảng timing chính xác cho bản 55 phút nằm ở `docs/voiceover_timing_longform.md`.
+- Lưu ý: phần lời đọc chi tiết bên dưới là bản nền cũ; khi thu âm bản longform, hãy căn lại theo timing map mới.
 - Nhịp đọc mục tiêu: **135-145 từ/phút**
 - Nội dung trong ngoặc vuông như `[nghỉ]`, `[nhấn]`, `[không đọc]` là chỉ dẫn thu âm, không đọc thành tiếng.
 - Lời đọc chính được viết gọn để khớp thời lượng; phần "Ý chính", "Pace", "Ghi chú" giúp thu âm đúng tinh thần nhưng không phải lời đọc.

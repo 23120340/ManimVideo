@@ -32,23 +32,27 @@ folder:
 Render every scene in all three episodes and concatenate them into one video:
 
 ```powershell
-.\render_full_video.ps1
+.\render_all.ps1
 ```
 
-The root script is a small wrapper around `scripts\render_full_video.ps1`, so
-the short command above remains stable even if helper scripts move later.
+`render_all.ps1` defaults to the `Longform` render list. The lower-level
+`render_full_video.ps1` wrapper is still available if you want to explicitly
+choose between `Current` and `Longform`.
 
 Useful options:
 
 ```powershell
 # Fast preview render, then concatenate
-.\render_full_video.ps1 -Quality l -Output preview_full.mp4
+.\render_all.ps1 -Quality l -Output preview_full.mp4
 
 # Use a specific Python if your active virtual environment is from another repo
-.\render_full_video.ps1 -PythonExe .\.venv\Scripts\python.exe
+.\render_all.ps1 -PythonExe .\.venv\Scripts\python.exe
 
 # Concatenate already-rendered files without rendering again
-.\render_full_video.ps1 -SkipRender -Output ManimVideo_full.mp4
+.\render_all.ps1 -SkipRender -Output ManimVideo_longform.mp4
+
+# Render only the older short version
+.\render_full_video.ps1 -Version Current -Output ManimVideo_full.mp4
 ```
 
 For quick iteration on Episode 1:

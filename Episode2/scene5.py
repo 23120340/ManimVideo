@@ -66,7 +66,7 @@ class Scene5Surprise(Scene):
                 robot_body.get_center() + direction * 0.65,
                 tip,
                 color=GRAY_LIGHT, buff=0, stroke_width=2.5,
-                max_tip_length_to_length_ratio=0.35,
+                max_tip_length_to_length_ratio=0.10,
             )
             forward_arrows.add(arr)
 
@@ -91,7 +91,7 @@ class Scene5Surprise(Scene):
             (UP * 0.7,              GRAY_MID),   # forward
             (UP * 0.5 + LEFT * 0.55, GRAY_MID),  # fwd-left
             (RIGHT * 0.8,           GRAY_MID),   # side-right
-            (DOWN * 0.85,           YELLOW_3B1B),# STRAIGHT DOWN — the surprise
+            (DOWN * 0.85,           ORANGE_3B1B),# STRAIGHT DOWN — the surprise
         ]
         for direction, col in optimal_configs:
             tip = robot_body.get_center() + direction * 1.08
@@ -99,7 +99,7 @@ class Scene5Surprise(Scene):
                 robot_body.get_center() + direction * 0.65,
                 tip,
                 color=col, buff=0, stroke_width=2.8,
-                max_tip_length_to_length_ratio=0.35,
+                max_tip_length_to_length_ratio=0.10,
             )
             optimal_arrows.add(arr)
 
@@ -118,11 +118,18 @@ class Scene5Surprise(Scene):
         self.play(
             GrowArrow(optimal_arrows[3], run_time=0.9, rate_func=smooth),
         )
+        down_focus = SurroundingRectangle(
+            VGroup(robot_body, optimal_arrows[3]),
+            color=emphasis_color_of(optimal_arrows[3]),
+            buff=0.18,
+            stroke_width=2.2,
+        )
         self.play(
-            Indicate(optimal_arrows[3], color=YELLOW_3B1B, scale_factor=1.4, run_time=1.0),
+            Create(down_focus, run_time=0.35),
+            FadeOut(down_focus, run_time=0.65),
         )
 
-        down_lbl = Text("Points DOWN?!", font_size=22, color=YELLOW_3B1B, weight=BOLD)
+        down_lbl = Text("Points DOWN?!", font_size=22, color=ORANGE_3B1B, weight=BOLD)
         down_lbl.next_to(robot_body, RIGHT, buff=0.3).shift(DOWN * 0.85)
         self.play(FadeIn(down_lbl, scale=1.2, run_time=0.7))
         self.wait(0.5)
@@ -163,7 +170,7 @@ class Scene5Surprise(Scene):
         self.wait(0.3)
 
         # Mini floor-sensor demo
-        exp3 = Text("③ Floor texture changes near walls → early warning", font_size=22, color=YELLOW_3B1B)
+        exp3 = Text("③ Floor texture changes near walls → early warning", font_size=22, color=ORANGE_3B1B)
         exp3.next_to(exp2, DOWN, buff=0.3, aligned_edge=LEFT)
         self.play(FadeIn(exp3, shift=RIGHT * 0.3, run_time=0.7))
         self.wait(0.3)
@@ -193,12 +200,12 @@ class Scene5Surprise(Scene):
         sensor_beam = Line(
             mini_robot_r.get_bottom(),
             mini_robot_r.get_bottom() + DOWN * 0.35,
-            color=YELLOW_3B1B, stroke_width=2.5,
+            color=ORANGE_3B1B, stroke_width=2.5,
         )
 
         # Contrast indicator dot on floor
         contrast_dot = Dot(
-            sensor_beam.get_end(), radius=0.08, color=YELLOW_3B1B,
+            sensor_beam.get_end(), radius=0.08, color=ORANGE_3B1B,
         )
 
         self.play(

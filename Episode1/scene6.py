@@ -84,8 +84,8 @@ class Scene6Cliffhanger(Scene):
             node_color=BLUE_3B1B,
         )
         nn_group.scale(0.75).move_to(LEFT * 4 + DOWN * 0.3)
-        theta_brain = MarkupText(
-            'θ<sub>brain</sub>', font_size=36, color=YELLOW_3B1B,
+        theta_brain = MathTex(
+            r"\theta_{\mathrm{brain}}", font_size=36, color=YELLOW_3B1B,
         ).next_to(nn_group, UP, buff=0.4)
 
         # Bên phải: cá
@@ -102,8 +102,8 @@ class Scene6Cliffhanger(Scene):
                 LEFT * 0.85 + DOWN * 0.12,
             ]
         ])
-        theta_body = MarkupText(
-            'θ<sub>body</sub>', font_size=36, color=YELLOW_3B1B,
+        theta_body = MathTex(
+            r"\theta_{\mathrm{body}}", font_size=36, color=YELLOW_3B1B,
         ).next_to(body_outline, UP, buff=0.4)
         theta_body.align_to(theta_brain, UP)
 
@@ -202,7 +202,7 @@ class Scene6Cliffhanger(Scene):
         for i in [1, 2, 3, 4]:  # eye position, resolution, FOV, sensor count
             box = comp_group[i][0]
             h = SurroundingRectangle(
-                box, color=YELLOW_3B1B, stroke_width=2.5,
+                box, color=emphasis_color_of(box), stroke_width=2.5,
                 buff=0.05,
             )
             eye_highlights.add(h)

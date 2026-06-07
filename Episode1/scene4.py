@@ -48,10 +48,10 @@ class Scene4MathFormulation(Scene):
             axis_config={"stroke_color": GRAY_DIM, "stroke_width": 1.5},
         ).move_to(LEFT * 3.5 + DOWN * 0.3)
 
-        ds_label = MarkupText(
-            'Design Space  θ',
-            font_size=26, color=BLUE_3B1B, weight=BOLD,
-        ).next_to(ds_axes, UP, buff=0.4)
+        ds_label = VGroup(
+            Text("Design Space", font_size=26, color=BLUE_3B1B, weight=BOLD),
+            MathTex(r"\theta", font_size=30, color=BLUE_3B1B),
+        ).arrange(RIGHT, buff=0.15).next_to(ds_axes, UP, buff=0.4)
 
         # Vài chấm = thiết kế cụ thể
         rng = np.random.default_rng(3)
@@ -72,10 +72,10 @@ class Scene4MathFormulation(Scene):
             axis_config={"stroke_color": GRAY_DIM, "stroke_width": 1.5},
         ).move_to(RIGHT * 3.5 + DOWN * 0.3)
 
-        ps_label = MarkupText(
-            'Utility Function  U(θ)',
-            font_size=26, color=YELLOW_3B1B, weight=BOLD,
-        ).next_to(ps_axes, UP, buff=0.4)
+        ps_label = VGroup(
+            Text("Utility Function", font_size=26, color=YELLOW_3B1B, weight=BOLD),
+            MathTex(r"U(\theta)", font_size=30, color=YELLOW_3B1B),
+        ).arrange(RIGHT, buff=0.15).next_to(ps_axes, UP, buff=0.4)
 
         # U(θ) — đường cong có 1 đỉnh (Gaussian-like)
         u_curve = ps_axes.plot(
@@ -157,10 +157,10 @@ class Scene4MathFormulation(Scene):
         peak_circle = Circle(
             radius=0.25, color=GREEN_3B1B, stroke_width=2.5,
         ).move_to(ps_marker.get_center())
-        peak_label = MarkupText(
-            'θ*  =  optimal design',
-            font_size=22, color=GREEN_3B1B, weight=BOLD,
-        ).next_to(peak_circle, UP, buff=0.2)
+        peak_label = VGroup(
+            MathTex(r"\theta^*", font_size=24, color=GREEN_3B1B),
+            Text("= optimal design", font_size=22, color=GREEN_3B1B, weight=BOLD),
+        ).arrange(RIGHT, buff=0.10).next_to(peak_circle, UP, buff=0.2)
 
         self.play(Create(peak_circle), Write(peak_label), run_time=1.2)
         self.wait(2.0)
@@ -176,16 +176,14 @@ class Scene4MathFormulation(Scene):
         snap_ps = Dot(ps_marker.get_center(), radius=0.12, color=ORANGE_3B1B)
 
         # Phương trình to ở giữa
-        eq = MarkupText(
-            'θ*  =  arg max  U(θ)',
-            font_size=44, color=GRAY_LIGHT,
+        eq = MathTex(
+            r"\theta^* = \arg\max_{\theta}\; U(\theta)",
+            font_size=48, color=GRAY_LIGHT,
         )
         eq.move_to(UP * 2.7)
-        sub_theta = MarkupText('θ', font_size=22, color=GRAY_LIGHT)
-        sub_theta.next_to(eq, DOWN, buff=0).shift(LEFT * 1.05 + UP * 0.55)
 
         eq_box = SurroundingRectangle(
-            VGroup(eq, sub_theta), color=YELLOW_3B1B,
+            eq, color=emphasis_color_of(eq),
             buff=0.25, stroke_width=2, stroke_opacity=0.85,
         )
 
@@ -195,7 +193,7 @@ class Scene4MathFormulation(Scene):
             FadeIn(snap_ds), FadeIn(snap_ps),
             run_time=0.6,
         )
-        self.play(Write(eq), FadeIn(sub_theta), run_time=1.5)
+        self.play(Write(eq), run_time=1.5)
         self.play(Create(eq_box), run_time=0.7)
         self.wait(1.5)
 
@@ -216,7 +214,7 @@ class Scene4MathFormulation(Scene):
         # Clear toàn bộ part A-C
         all_abc = VGroup(
             ds_axes, ds_label, ps_axes, ps_label, u_curve, divider,
-            snap_ds, snap_ps, eq, sub_theta, eq_box, catch, catch_2,
+            snap_ds, snap_ps, eq, eq_box, catch, catch_2,
         )
         self.play(FadeOut(all_abc), run_time=1.0)
 
@@ -233,7 +231,12 @@ class Scene4MathFormulation(Scene):
                 width=2.0, height=1.0, corner_radius=0.15,
                 color=col, stroke_width=2.5, fill_opacity=0.15,
             ).move_to([x, 0, 0])
-            text = MarkupText(lbl, font_size=22, color=col)
+            if lbl == "θ":
+                text = MathTex(r"\theta", font_size=28, color=col)
+            elif lbl == "U(θ)":
+                text = MathTex(r"U(\theta)", font_size=28, color=col)
+            else:
+                text = Text(lbl, font_size=22, color=col, weight=BOLD)
             text.move_to(box.get_center())
             node_group.add(VGroup(box, text))
             positions.append([x, 0, 0])
@@ -310,9 +313,10 @@ class Scene4MathFormulation(Scene):
         ).move_to(phys_box.get_top() + DOWN * 0.5)
 
         # Newton equation
-        newton = MarkupText(
-            'F  =  m · a',
-            font_size=32, color=GRAY_LIGHT,
+        newton = MathTex(
+            r"F=m\cdot a",
+            font_size=32,
+            color=GRAY_LIGHT,
         ).move_to(phys_box.get_center() + UP * 0.6)
 
         # Sơ đồ lò xo + khối

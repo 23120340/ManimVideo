@@ -83,7 +83,7 @@ class Scene0ColdOpen(MovingCameraScene):
                     start=[x_start + 0.5, y + rng.uniform(-0.1, 0.1), 0],
                     end=[x_start - 0.5, y + rng.uniform(-0.1, 0.1), 0],
                     color=BLUE_3B1B, stroke_width=2,
-                    max_tip_length_to_length_ratio=0.35,
+                    max_tip_length_to_length_ratio=0.10,
                     buff=0,
                 ).set_opacity(0.45)
                 flow_arrows.add(arrow)
@@ -118,12 +118,13 @@ class Scene0ColdOpen(MovingCameraScene):
         self.wait(2.0)
 
         # Highlight đuôi — vẫn đang quẫy mặc dù cá đã chết
+        tail_emphasis = emphasis_color_of(fish[1], fallback=BLUE_3B1B)
         tail_circle = Circle(
-            radius=0.7, color=YELLOW_3B1B,
+            radius=0.7, color=tail_emphasis,
             stroke_width=2.5, fill_opacity=0.15,
         ).move_to(fish[1].get_center())
         tail_label = Text(
-            "still moving", font_size=24, color=YELLOW_3B1B, slant=ITALIC,
+            "still moving", font_size=24, color=tail_emphasis, slant=ITALIC,
         ).next_to(tail_circle, DOWN, buff=0.4)
 
         self.play(

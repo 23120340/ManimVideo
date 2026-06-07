@@ -1,6 +1,11 @@
+[CmdletBinding()]
+param(
+    [switch]$Longform
+)
+
 $ErrorActionPreference = "Stop"
 
-$scenes = @(
+$currentScenes = @(
     @("scene0.py", "Scene0ColdOpen"),
     @("scene1.py", "Scene1MainQuestion"),
     @("scene2.py", "Scene2EyeDiversity"),
@@ -10,6 +15,28 @@ $scenes = @(
     @("scene6.py", "Scene6Cliffhanger"),
     @("scene7.py", "Scene7Outro")
 )
+
+$longformScenes = @(
+    @("scene0.py", "Scene0ColdOpen"),
+    @("scene1.py", "Scene1MainQuestion"),
+    @("scene1b_design_loop.py", "Scene1BDesignLoop"),
+    @("scene8_seminar_deep_dive.py", "Scene8PassiveDynamicsDeepDive"),
+    @("scene8_seminar_deep_dive.py", "Scene9EcologicalFramingDeepDive"),
+    @("scene2.py", "Scene2EyeDiversity"),
+    @("scene2b_vision_tradeoffs.py", "Scene2BVisionTradeoffs"),
+    @("scene2c_visual_acuity.py", "Scene2CVisualAcuity"),
+    @("scene8_seminar_deep_dive.py", "Scene10BiologicalVisionDeepDive"),
+    @("scene8_seminar_deep_dive.py", "Scene11OceanAcuityDeepDive"),
+    @("scene3.py", "Scene3ZebraTwist"),
+    @("scene3b_ecological_caveat.py", "Scene3BEcologicalCaveat"),
+    @("scene4.py", "Scene4MathFormulation"),
+    @("scene4b_utility_context.py", "Scene4BUtilityContext"),
+    @("scene5.py", "Scene5CarlSims"),
+    @("scene6.py", "Scene6Cliffhanger"),
+    @("scene7.py", "Scene7Outro")
+)
+
+$scenes = if ($Longform) { $longformScenes } else { $currentScenes }
 
 Push-Location $PSScriptRoot
 try {

@@ -18,8 +18,8 @@ class Scene7Cliffhanger(Scene):
         self.camera.background_color = BG_COLOR
 
         # ── θ_robot title ─────────────────────────────────────────
-        theta_full = MarkupText(
-            "θ<sub>robot</sub>", font_size=52, color=YELLOW_3B1B,
+        theta_full = MathTex(
+            r"\theta_{\mathrm{robot}}", font_size=52, color=YELLOW_3B1B,
         )
         theta_full.to_edge(UP, buff=0.45)
         self.play(Write(theta_full, run_time=1.0, rate_func=smooth))
@@ -28,13 +28,13 @@ class Scene7Cliffhanger(Scene):
         # ── Split: create boxes FIRST so arrows can point to their tops ─
         split_origin = theta_full.get_bottom() + DOWN * 0.1
 
-        theta_brain = MarkupText(
-            "θ<sub>brain</sub>", font_size=38, color=PURPLE_3B1B,
+        theta_brain = MathTex(
+            r"\theta_{\mathrm{brain}}", font_size=38, color=PURPLE_3B1B,
         )
         theta_brain.move_to(split_origin + DOWN * 1.35 + LEFT * 2.4)
 
-        theta_body = MarkupText(
-            "θ<sub>body</sub>", font_size=38, color=TEAL_EP2,
+        theta_body = MathTex(
+            r"\theta_{\mathrm{body}}", font_size=38, color=TEAL_EP2,
         )
         theta_body.move_to(split_origin + DOWN * 1.35 + RIGHT * 2.4)
 
@@ -51,12 +51,12 @@ class Scene7Cliffhanger(Scene):
         split_arrow_l = Arrow(
             split_origin, brain_box.get_top(),
             color=GRAY_MID, buff=0.05, stroke_width=2.2,
-            max_tip_length_to_length_ratio=0.25,
+            max_tip_length_to_length_ratio=0.09,
         )
         split_arrow_r = Arrow(
             split_origin, body_box.get_top(),
             color=GRAY_MID, buff=0.05, stroke_width=2.2,
-            max_tip_length_to_length_ratio=0.25,
+            max_tip_length_to_length_ratio=0.09,
         )
 
         self.play(
@@ -72,12 +72,13 @@ class Scene7Cliffhanger(Scene):
         self.wait(0.5)
 
         # ── Highlight θ_body ──────────────────────────────────────
+        body_emphasis = emphasis_color_of(body_box)
         self.play(
-            Indicate(body_box, color=YELLOW_3B1B, scale_factor=1.12, run_time=1.0),
-            theta_body.animate.set_color(YELLOW_3B1B),
+            Indicate(body_box, color=body_emphasis, scale_factor=1.12, run_time=1.0),
+            theta_body.animate.set_color(emphasis_color_of(theta_body)),
         )
         body_box_new = SurroundingRectangle(
-            theta_body, color=YELLOW_3B1B, buff=0.22,
+            theta_body, color=body_emphasis, buff=0.22,
             stroke_width=2.5, corner_radius=0.1,
         )
         self.play(ReplacementTransform(body_box, body_box_new, run_time=0.5))
@@ -93,17 +94,29 @@ class Scene7Cliffhanger(Scene):
 
         sub_items = VGroup()
         for name, col in sub_params:
-            item = Text(f"• {name}", font_size=18, color=col)
-            sub_items.add(item)
-        sub_items.arrange(DOWN, aligned_edge=LEFT, buff=0.24)
-        sub_items.next_to(body_box, DOWN, buff=0.38)
-        sub_items.align_to(body_box, LEFT)
+            box = RoundedRectangle(
+                width=2.45,
+                height=0.42,
+                corner_radius=0.12,
+                color=col,
+                stroke_width=1.5,
+                fill_color=col,
+                fill_opacity=0.08,
+            )
+            icon = Dot(radius=0.045, color=col)
+            label = Text(name, font_size=17, color=col, weight=BOLD)
+            icon.move_to(box.get_left() + RIGHT * 0.30)
+            label.move_to(box.get_left() + RIGHT * 1.05)
+            sub_items.add(VGroup(box, icon, label))
+        sub_items.arrange(DOWN, aligned_edge=LEFT, buff=0.14)
+        sub_items.next_to(body_box_new, DOWN, buff=0.34)
+        sub_items.align_to(body_box_new, LEFT)
 
         expand_arrow = Arrow(
-            body_box.get_bottom(),
+            body_box_new.get_bottom(),
             sub_items.get_top() + UP * 0.06,
             buff=0, color=TEAL_EP2, stroke_width=2.0,
-            max_tip_length_to_length_ratio=0.28,
+            max_tip_length_to_length_ratio=0.09,
         )
 
         self.play(GrowArrow(expand_arrow, run_time=0.5))
@@ -126,7 +139,7 @@ class Scene7Cliffhanger(Scene):
         question_txt.move_to(LEFT * 3.2 + DOWN * 1.6)
         self.play(Write(question_txt, run_time=1.4, rate_func=smooth))
         self.play(
-            question_txt.animate.set_color(YELLOW_3B1B),
+            question_txt.animate.set_color(emphasis_color_of(question_txt)).scale(1.025),
             run_time=0.6, rate_func=smooth,
         )
         self.wait(0.8)

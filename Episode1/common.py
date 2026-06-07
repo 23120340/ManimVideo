@@ -10,7 +10,8 @@ Contains:
 
 Text convention (all scenes follow this):
   • Text(...)       for plain English text
-  • MarkupText(...) for subscript / superscript  (e.g. θ<sub>brain</sub>)
+  • MathTex(...)    for formulas / symbolic labels (e.g. \\theta_{\\mathrm{brain}})
+  • MarkupText(...) only for inline colored prose spans.
   • Never set font= in Text or MarkupText — use the Pango system default.
 
 Import in every scene:
@@ -36,6 +37,50 @@ GRAY_LIGHT  = "#E5E7EB"
 GRAY_MID    = "#9CA3AF"
 GRAY_DIM    = "#6B7280"
 GRAY_DARKER = "#374151"
+
+
+def stronger_same_hue(color, amount=0.24):
+    """Make a color pop on the dark background without changing its hue."""
+    try:
+        base = ManimColor(color)
+    except Exception:
+        base = ManimColor(GRAY_LIGHT)
+    return interpolate_color(base, WHITE, amount)
+
+
+def emphasis_color_of(target, fallback=GRAY_LIGHT, amount=0.24):
+    """Pick a visible color from a mobject and strengthen that same color."""
+    if isinstance(target, str):
+        return stronger_same_hue(target, amount)
+
+    members = []
+    if hasattr(target, "family_members_with_points"):
+        members = target.family_members_with_points()
+    if not members:
+        members = [target]
+
+    for mob in members:
+        try:
+            if (
+                hasattr(mob, "get_stroke_width")
+                and mob.get_stroke_width() > 0.05
+                and mob.get_stroke_opacity() > 0.04
+            ):
+                return stronger_same_hue(mob.get_stroke_color(), amount)
+        except Exception:
+            pass
+        try:
+            if hasattr(mob, "get_fill_opacity") and mob.get_fill_opacity() > 0.04:
+                return stronger_same_hue(mob.get_fill_color(), amount)
+        except Exception:
+            pass
+        try:
+            if hasattr(mob, "get_color"):
+                return stronger_same_hue(mob.get_color(), amount)
+        except Exception:
+            pass
+
+    return stronger_same_hue(fallback, amount)
 
 
 # ────────────────────────────────────────────────────────────────

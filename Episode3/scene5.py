@@ -71,7 +71,7 @@ class Scene5Outro(Scene):
             end=RIGHT * 1.2 + DOWN * 1.7,
             color=ORANGE_3B1B,
             stroke_width=3,
-            max_tip_length_to_length_ratio=0.2,
+            max_tip_length_to_length_ratio=0.08,
             buff=0,
         )
         gap_label = Text(
