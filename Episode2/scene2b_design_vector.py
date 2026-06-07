@@ -16,24 +16,24 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import *  # noqa: F401,F403
 
 
-def labeled_chip(text, color, width=0.92):
+def labeled_chip(text, color, width=0.76, height=0.34, font_size=15):
     box = RoundedRectangle(
         width=width,
-        height=0.42,
-        corner_radius=0.12,
+        height=height,
+        corner_radius=0.10,
         color=color,
-        stroke_width=1.7,
+        stroke_width=1.45,
         fill_color=color,
         fill_opacity=0.13,
     )
-    label = Text(text, font_size=18, color=GRAY_LIGHT, weight=BOLD)
+    label = Text(text, font_size=font_size, color=GRAY_LIGHT, weight=BOLD)
     if label.width > width - 0.18:
         label.scale_to_fit_width(width - 0.18)
     label.move_to(box)
     return VGroup(box, label)
 
 
-def make_card(title, lines, color, width=3.15, height=2.25):
+def make_card(title, lines, color, width=2.85, height=2.02):
     frame = RoundedRectangle(
         width=width,
         height=height,
@@ -43,21 +43,21 @@ def make_card(title, lines, color, width=3.15, height=2.25):
         fill_color=GRAY_DARKER,
         fill_opacity=0.18,
     )
-    title_text = Text(title, font_size=22, color=color, weight=BOLD)
+    title_text = Text(title, font_size=20, color=color, weight=BOLD)
     if title_text.width > width - 0.35:
         title_text.scale_to_fit_width(width - 0.35)
     title_text.move_to(frame.get_top() + DOWN * 0.36)
 
     body = VGroup()
     for line in lines:
-        line_text = Text(line, font_size=19, color=GRAY_LIGHT)
+        line_text = Text(line, font_size=17, color=GRAY_LIGHT)
         if line_text.width > width - 0.45:
             line_text.scale_to_fit_width(width - 0.45)
         body.add(line_text)
     body.arrange(DOWN, aligned_edge=LEFT, buff=0.14)
     if body.height > height - 0.95:
         body.scale_to_fit_height(height - 0.95)
-    body.move_to(frame.get_center() + DOWN * 0.22)
+    body.move_to(frame.get_center() + DOWN * 0.18)
 
     return VGroup(frame, title_text, body)
 
@@ -108,11 +108,12 @@ class Scene2BDesignVector(Scene):
         self.play(FadeOut(sensor_label, run_time=0.35))
 
         vector = MathTex(
-            r"\theta_i=(x_i,y_i,z_i,\mathrm{pitch}_i,\mathrm{yaw}_i,\mathrm{roll}_i,\mathrm{fov}_i)",
-            font_size=32,
+            r"\theta_i=\bigl(x_i,\ y_i,\ z_i,\ \operatorname{pitch}_i,\ \operatorname{yaw}_i,\ \operatorname{roll}_i,\ \operatorname{fov}_i\bigr)",
+            font_size=34,
             color=GRAY_LIGHT,
         )
-        vector.scale_to_fit_width(8.9)
+        if vector.width > 9.25:
+            vector.scale_to_fit_width(9.25)
         vector.move_to(RIGHT * 1.25 + UP * 1.82)
         vector_box = SurroundingRectangle(vector, color=emphasis_color_of(vector), buff=0.22, stroke_width=1.7)
         self.play(Create(vector_box), Write(vector, run_time=1.25))
@@ -135,24 +136,28 @@ class Scene2BDesignVector(Scene):
         )
 
         cards = VGroup(position_card, orientation_card, fov_card)
-        cards.arrange(RIGHT, buff=0.42)
-        cards.scale_to_fit_width(8.45)
+        cards.arrange(RIGHT, buff=0.54)
+        cards.scale_to_fit_width(8.00)
         cards.move_to(RIGHT * 1.25 + DOWN * 0.35)
 
-        pos_chips = VGroup(labeled_chip("x", BLUE_3B1B), labeled_chip("y", BLUE_3B1B), labeled_chip("z", BLUE_3B1B))
-        pos_chips.arrange(RIGHT, buff=0.10)
-        pos_chips.next_to(position_card, DOWN, buff=0.20)
+        pos_chips = VGroup(
+            labeled_chip("x", BLUE_3B1B, width=0.70),
+            labeled_chip("y", BLUE_3B1B, width=0.70),
+            labeled_chip("z", BLUE_3B1B, width=0.70),
+        )
+        pos_chips.arrange(RIGHT, buff=0.07)
+        pos_chips.next_to(position_card, DOWN, buff=0.16)
 
         ori_chips = VGroup(
-            labeled_chip("pitch", ORANGE_3B1B, 1.05),
-            labeled_chip("yaw", ORANGE_3B1B),
-            labeled_chip("roll", ORANGE_3B1B),
+            labeled_chip("pitch", ORANGE_3B1B, width=0.86, font_size=14),
+            labeled_chip("yaw", ORANGE_3B1B, width=0.76, font_size=14),
+            labeled_chip("roll", ORANGE_3B1B, width=0.76, font_size=14),
         )
-        ori_chips.arrange(RIGHT, buff=0.10)
-        ori_chips.next_to(orientation_card, DOWN, buff=0.20)
+        ori_chips.arrange(RIGHT, buff=0.07)
+        ori_chips.next_to(orientation_card, DOWN, buff=0.16)
 
-        fov_chips = VGroup(labeled_chip("fov", GREEN_3B1B, 1.05))
-        fov_chips.next_to(fov_card, DOWN, buff=0.20)
+        fov_chips = VGroup(labeled_chip("fov", GREEN_3B1B, width=0.82))
+        fov_chips.next_to(fov_card, DOWN, buff=0.16)
 
         self.play(FadeIn(position_card, shift=UP * 0.2), run_time=0.65)
         new_sensor_center = robot.get_left() + RIGHT * 0.16

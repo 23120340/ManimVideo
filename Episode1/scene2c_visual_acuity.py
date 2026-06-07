@@ -86,14 +86,27 @@ class Scene2CVisualAcuity(Scene):
         self.wait(5.0)
 
         caveat = Text(
-            "High acuity is useful only when the task pays for that information.",
-            font_size=25,
+            "High acuity helps only when\n"
+            "the task pays for that information.",
+            font_size=20,
             color=YELLOW_3B1B,
             weight=BOLD,
+            line_spacing=1.05,
         )
-        caveat.scale_to_fit_width(11.0)
-        caveat.to_edge(DOWN, buff=0.78)
-        self.play(FadeIn(caveat, shift=UP * 0.08), run_time=0.8)
+        caveat_box = RoundedRectangle(
+            width=8.65,
+            height=0.82,
+            corner_radius=0.16,
+            color=YELLOW_3B1B,
+            stroke_width=1.5,
+            fill_color=YELLOW_3B1B,
+            fill_opacity=0.07,
+        )
+        if caveat.width > caveat_box.width - 0.45:
+            caveat.scale_to_fit_width(caveat_box.width - 0.45)
+        caveat.move_to(caveat_box)
+        caveat_group = VGroup(caveat_box, caveat).move_to(DOWN * 1.82)
+        self.play(FadeIn(caveat_group, shift=UP * 0.08), run_time=0.8)
         self.wait(4.0)
 
         self.play(FadeOut(Group(*self.mobjects), run_time=1.1))

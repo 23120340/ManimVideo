@@ -29,19 +29,19 @@ class Scene2CCameraBaseline(Scene):
         cam_box.move_to(LEFT * 2.85 + DOWN * 0.10)
         pr_box.move_to(RIGHT * 2.85 + DOWN * 0.10)
 
-        cam_title = Text("128 x 128 camera", font_size=26, color=BLUE_3B1B, weight=BOLD).move_to(cam_box.get_top() + DOWN * 0.42)
-        pr_title = Text("64 photoreceptors", font_size=26, color=GREEN_3B1B, weight=BOLD).move_to(pr_box.get_top() + DOWN * 0.42)
+        cam_title = Text("128 x 128 camera", font_size=25, color=BLUE_3B1B, weight=BOLD).move_to(cam_box.get_top() + DOWN * 0.40)
+        pr_title = Text("64 photoreceptors", font_size=25, color=GREEN_3B1B, weight=BOLD).move_to(pr_box.get_top() + DOWN * 0.40)
 
         grid = VGroup()
-        cell = 0.09
+        cell = 0.078
         for r in range(16):
             for c in range(16):
                 sq = Square(side_length=cell, color=BLUE_3B1B, stroke_width=0.25, fill_color=BLUE_3B1B, fill_opacity=0.35)
                 sq.move_to(np.array([c * cell, -r * cell, 0]))
                 grid.add(sq)
-        grid.move_to(cam_box.get_center() + DOWN * 0.20)
-        grid_label = Text("16,384 values\nper frame", font_size=18, color=GRAY_LIGHT, line_spacing=1.10, font="Consolas")
-        grid_label.move_to(cam_box.get_bottom() + UP * 0.55)
+        grid.move_to(cam_box.get_center() + DOWN * 0.08)
+        grid_label = Text("16,384 values\nper frame", font_size=16, color=GRAY_LIGHT, line_spacing=1.10, font="Consolas")
+        grid_label.move_to(cam_box.get_bottom() + UP * 0.48)
         self.play(
             FadeIn(cam_box),
             FadeIn(pr_box),
@@ -56,12 +56,12 @@ class Scene2CCameraBaseline(Scene):
         dots = VGroup()
         for r in range(8):
             for c in range(8):
-                d = Dot(radius=0.055, color=GREEN_3B1B)
-                d.move_to(np.array([c * 0.28, -r * 0.28, 0]))
+                d = Dot(radius=0.047, color=GREEN_3B1B)
+                d.move_to(np.array([c * 0.245, -r * 0.245, 0]))
                 dots.add(d)
-        dots.move_to(pr_box.get_center() + DOWN * 0.10)
-        dot_label = Text("64 readings\n< 1% bandwidth", font_size=18, color=GRAY_LIGHT, line_spacing=1.10, font="Consolas")
-        dot_label.move_to(pr_box.get_bottom() + UP * 0.55)
+        dots.move_to(pr_box.get_center() + DOWN * 0.05)
+        dot_label = Text("64 readings\n< 1% bandwidth", font_size=16, color=GRAY_LIGHT, line_spacing=1.10, font="Consolas")
+        dot_label.move_to(pr_box.get_bottom() + UP * 0.48)
         self.play(
             LaggedStart(*[FadeIn(d, scale=1.4) for d in dots], lag_ratio=0.015),
             FadeIn(dot_label),

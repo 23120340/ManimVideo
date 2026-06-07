@@ -316,7 +316,7 @@ class Scene9EcologicalFramingDeepDive(Scene):
 
             scene_box = RoundedRectangle(width=2.54, height=1.08, corner_radius=0.14, color=color, stroke_width=1.1, fill_color=color, fill_opacity=0.05)
             scene_box.move_to(card.get_center() + UP * 0.40)
-            eye = Circle(radius=0.18, color=YELLOW_3B1B, stroke_width=1.8)
+            eye = Circle(radius=0.18, color=_stronger_same_hue(color), stroke_width=1.8)
             eye.move_to(scene_box.get_left() + RIGHT * 0.72 + DOWN * 0.02)
 
             art = VGroup(scene_box, eye)
@@ -351,16 +351,14 @@ class Scene9EcologicalFramingDeepDive(Scene):
                 cone = vision_sector(0.70, 3 * DEGREES, 0.31, 0.03, 0.20)
                 final_cone = vision_sector(0.70, 52 * DEGREES, 0.31, 0.20, 1.0)
                 cone_spec = (0.70, 52 * DEGREES, 0.31, 0.20, 1.0, 1.5, color)
-                cue_dot = Dot(eye.get_center() + RIGHT * 0.82 + UP * 0.03, radius=0.045, color=YELLOW_3B1B)
-                art.add(cone, cue_dot)
+                art.add(cone)
             else:
                 darkness = RoundedRectangle(width=2.26, height=0.96, corner_radius=0.13, color=PURPLE_3B1B, stroke_width=0, fill_color="#0B0B12", fill_opacity=0.70)
                 darkness.move_to(scene_box)
                 cone = vision_sector(0.58, 3 * DEGREES, 0.24, 0.02, 0.15, stroke_width=1.2)
                 final_cone = vision_sector(0.58, 42 * DEGREES, 0.24, 0.10, 0.75, stroke_width=1.2)
                 cone_spec = (0.58, 42 * DEGREES, 0.24, 0.10, 0.75, 1.2, color)
-                light = Dot(eye.get_center() + RIGHT * 0.88 + UP * 0.18, radius=0.035, color=GRAY_LIGHT).set_opacity(0.45)
-                art.add(darkness, cone, light)
+                art.add(darkness, cone)
 
             art.remove(eye)
             art.add(eye)
@@ -550,7 +548,7 @@ class Scene11OceanAcuityDeepDive(Scene):
             small_card("design thinking", "needed cue\nright place", GREEN_3B1B, width=3.35, height=1.28),
         ).arrange(RIGHT, buff=0.75)
         compare.move_to(DOWN * 2.12)
-        compare_arrow = Arrow(compare[0].get_right() + RIGHT * 0.08, compare[1].get_left() + LEFT * 0.08, color=YELLOW_3B1B, stroke_width=1.5, tip_length=0.09, buff=0.08)
+        compare_arrow = Arrow(compare[0].get_right() + RIGHT * 0.08, compare[1].get_left() + LEFT * 0.08, color=GREEN_3B1B, stroke_width=1.5, tip_length=0.09, buff=0.08)
         self.play(FadeIn(compare, shift=UP * 0.08), GrowArrow(compare_arrow), run_time=1.0)
         cap = caption("Bad-looking input can still contain good control information.")
         self.play(FadeIn(cap, shift=UP * 0.08), run_time=0.7)

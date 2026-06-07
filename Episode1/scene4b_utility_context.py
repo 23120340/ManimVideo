@@ -143,7 +143,7 @@ class Scene4BUtilityContext(Scene):
             run_time=0.9,
         )
         same = Text("same layout, different world", font_size=18, color=GRAY_MID, slant=ITALIC)
-        same.move_to(DOWN * 2.80)
+        same.move_to(DOWN * 3.03)
         self.play(FadeIn(same, shift=UP * 0.06), run_time=0.65)
         self.wait(4.0)
 

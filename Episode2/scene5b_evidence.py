@@ -126,23 +126,6 @@ class Scene5BEvidence(Scene):
         self.play(LaggedStart(*[GrowFromEdge(b, DOWN) for b in point_chart[2]], lag_ratio=0.15), FadeIn(point_chart[3:]), run_time=1.0)
         self.play(FadeIn(target_chart[0], shift=UP * 0.1), Create(target_chart[1]), run_time=0.55)
         self.play(LaggedStart(*[GrowFromEdge(b, DOWN) for b in target_chart[2]], lag_ratio=0.15), FadeIn(target_chart[3:]), run_time=1.0)
-        point_gain = Arrow(
-            point_chart[2][0].get_top() + RIGHT * 0.10 + UP * 0.10,
-            point_chart[2][1].get_top() + LEFT * 0.10 + UP * 0.10,
-            color=GREEN_3B1B,
-            buff=0.04,
-            stroke_width=2.2,
-            max_tip_length_to_length_ratio=0.10,
-        )
-        target_gain = Arrow(
-            target_chart[2][0].get_top() + RIGHT * 0.10 + UP * 0.10,
-            target_chart[2][1].get_top() + LEFT * 0.10 + UP * 0.10,
-            color=ORANGE_3B1B,
-            buff=0.04,
-            stroke_width=2.2,
-            max_tip_length_to_length_ratio=0.10,
-        )
-        self.play(GrowArrow(point_gain), GrowArrow(target_gain), run_time=0.8)
         self.play(
             Flash(point_chart[2][1].get_top(), color=emphasis_color_of(point_chart[2][1]), flash_radius=0.24),
             Flash(target_chart[2][1].get_top(), color=emphasis_color_of(target_chart[2][1]), flash_radius=0.24),

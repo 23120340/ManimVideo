@@ -8,8 +8,24 @@ Run:
     manim -pql scene2b_vision_tradeoffs.py Scene2BVisionTradeoffs
 """
 
+import os
+
 from manim import *
 from common import *
+
+
+ASSET_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+
+
+def asset_icon(filename, color, max_width=1.05, max_height=0.62):
+    icon = SVGMobject(os.path.join(ASSET_DIR, filename))
+    icon.set_color(color)
+    icon.set_fill(color, opacity=0.88)
+    icon.set_stroke(color, width=0.7, opacity=0.95)
+    icon.scale_to_fit_width(max_width)
+    if icon.height > max_height:
+        icon.scale_to_fit_height(max_height)
+    return icon
 
 
 def chip(label, color, width=1.65):
@@ -124,19 +140,39 @@ def eagle_icon(color=ORANGE_3B1B):
 
 
 def variable_pair(header, labels, color):
-    header_text = Text(header, font_size=12, color=color, weight=BOLD)
+    header_text = Text(header, font_size=14, color=color, weight=BOLD)
     items = VGroup(*[
-        chip(label, color, width=max(1.34, 0.15 * len(label) + 0.78)).scale(0.82)
+        chip(label, color, width=2.10).scale(0.82)
         for label in labels
-    ]).arrange(DOWN, buff=0.18)
+    ]).arrange(DOWN, buff=0.16)
     return VGroup(header_text, items).arrange(DOWN, buff=0.10)
+
+
+def animal_card(name, note, filename, color):
+    frame = RoundedRectangle(
+        width=2.34,
+        height=1.20,
+        corner_radius=0.16,
+        color=color,
+        stroke_width=1.7,
+        fill_color=color,
+        fill_opacity=0.08,
+    )
+    icon = asset_icon(filename, color)
+    label = Text(name, font_size=17, color=color, weight=BOLD)
+    detail = Text(note, font_size=11, color=GRAY_LIGHT, line_spacing=1.0)
+    content = VGroup(icon, label, detail).arrange(DOWN, buff=0.035)
+    if content.height > frame.height - 0.16:
+        content.scale_to_fit_height(frame.height - 0.16)
+    content.move_to(frame)
+    return VGroup(frame, icon, label, detail)
 
 
 class Scene2BVisionTradeoffs(Scene):
     def construct(self):
         self.camera.background_color = BG_COLOR
 
-        title = Text("There Is No Universal Eye", font_size=38, color=YELLOW_3B1B, weight=BOLD)
+        title = Text("There Is No Universal Eye", font_size=35, color=YELLOW_3B1B, weight=BOLD)
         title.to_edge(UP, buff=0.30)
         self.play(Write(title, run_time=1.0))
         self.wait(0.35)
@@ -148,37 +184,43 @@ class Scene2BVisionTradeoffs(Scene):
             stroke_width=2.4,
             max_tip_length_to_length_ratio=0.035,
         )
-        axis.move_to(UP * 1.04)
-        left_label = Text("wide field of view", font_size=20, color=BLUE_3B1B, weight=BOLD)
-        right_label = Text("high acuity", font_size=20, color=ORANGE_3B1B, weight=BOLD)
+        axis.move_to(UP * 0.62)
+        left_label = Text("wide field of view", font_size=18, color=BLUE_3B1B, weight=BOLD)
+        right_label = Text("high acuity", font_size=18, color=ORANGE_3B1B, weight=BOLD)
         left_label.next_to(axis.get_left(), DOWN, buff=0.22)
         right_label.next_to(axis.get_right(), DOWN, buff=0.22)
 
-        goat_dot = Dot(axis.point_from_proportion(0.17), radius=0.075, color=BLUE_3B1B)
-        eagle_dot = Dot(axis.point_from_proportion(0.84), radius=0.075, color=ORANGE_3B1B)
-        scallop_dot = Dot(axis.point_from_proportion(0.42), radius=0.075, color=PURPLE_3B1B)
-        goat_label = Text("goat", font_size=15, color=BLUE_3B1B).next_to(goat_dot, UP, buff=0.10)
-        eagle_label = Text("eagle", font_size=15, color=ORANGE_3B1B).next_to(eagle_dot, UP, buff=0.10)
-        scallop_label = Text("scallop", font_size=15, color=PURPLE_3B1B).next_to(scallop_dot, UP, buff=0.10)
-
-        goat_marker = goat_icon(BLUE_3B1B).scale(0.70).next_to(goat_label, UP, buff=0.08)
-        scallop_marker = scallop_icon(PURPLE_3B1B).scale(0.68).next_to(scallop_label, UP, buff=0.08)
-        eagle_marker = eagle_icon(ORANGE_3B1B).scale(0.72).next_to(eagle_label, UP, buff=0.08)
+        animal_data = [
+            ("goat", "wide scan", "goat.svg", BLUE_3B1B, 0.12),
+            ("scallop", "many eyes", "scallop.svg", PURPLE_3B1B, 0.50),
+            ("eagle", "sharp detail", "eagle.svg", ORANGE_3B1B, 0.88),
+        ]
+        animal_marks = VGroup()
+        animal_cards = VGroup()
+        stems = VGroup()
+        for name, note, filename, color, prop in animal_data:
+            dot = Dot(axis.point_from_proportion(prop), radius=0.070, color=color)
+            card = animal_card(name, note, filename, color)
+            card.move_to(dot.get_center() + UP * 1.30)
+            stem = Line(dot.get_center() + UP * 0.09, card.get_bottom() + DOWN * 0.04, color=color, stroke_width=1.2, stroke_opacity=0.65)
+            animal_marks.add(dot)
+            animal_cards.add(card)
+            stems.add(stem)
 
         self.play(GrowArrow(axis), FadeIn(left_label), FadeIn(right_label), run_time=0.9)
         self.play(
             LaggedStart(
-                FadeIn(goat_dot, scale=1.4), FadeIn(goat_label), FadeIn(goat_marker, shift=DOWN * 0.08),
-                FadeIn(scallop_dot, scale=1.4), FadeIn(scallop_label), FadeIn(scallop_marker, shift=DOWN * 0.08),
-                FadeIn(eagle_dot, scale=1.4), FadeIn(eagle_label), FadeIn(eagle_marker, shift=DOWN * 0.08),
+                *[FadeIn(dot, scale=1.35) for dot in animal_marks],
+                *[Create(stem) for stem in stems],
+                *[FadeIn(card, shift=DOWN * 0.08) for card in animal_cards],
                 lag_ratio=0.16,
             ),
-            run_time=1.2,
+            run_time=1.4,
         )
         self.wait(0.55)
 
-        design_title = Text("design variables", font_size=25, color=GRAY_LIGHT, weight=BOLD)
-        design_title.move_to(DOWN * 0.48)
+        design_title = Text("design variables", font_size=23, color=GRAY_LIGHT, weight=BOLD)
+        design_title.move_to(DOWN * 0.66)
         link_arrow = Arrow(
             axis.get_center() + DOWN * 0.34,
             design_title.get_top() + UP * 0.10,
@@ -196,8 +238,8 @@ class Scene2BVisionTradeoffs(Scene):
             variable_pair("coverage", ["FOV", "placement"], BLUE_3B1B),
             variable_pair("detail", ["resolution", "optics"], ORANGE_3B1B),
             variable_pair("constraints", ["sensitivity", "energy cost"], PURPLE_3B1B),
-        ).arrange(RIGHT, buff=0.56)
-        variable_groups.move_to(DOWN * 1.42)
+        ).arrange(RIGHT, buff=0.92)
+        variable_groups.move_to(DOWN * 1.52)
         self.play(
             LaggedStart(*[FadeIn(group, scale=0.94) for group in variable_groups], lag_ratio=0.10),
             run_time=1.1,
@@ -206,7 +248,7 @@ class Scene2BVisionTradeoffs(Scene):
 
         bottom_text = Text(
             "Biology optimizes for a niche, not for a pretty eye diagram.",
-            font_size=20,
+            font_size=18,
             color=YELLOW_3B1B,
             weight=BOLD,
         )
@@ -219,9 +261,11 @@ class Scene2BVisionTradeoffs(Scene):
             fill_color=YELLOW_3B1B,
             fill_opacity=0.07,
         )
-        bottom_text.scale_to_fit_width(bottom_box.width - 0.45)
+        if bottom_text.width > bottom_box.width - 0.45:
+            bottom_text.scale_to_fit_width(bottom_box.width - 0.45)
+        bottom_text.move_to(bottom_box)
         bottom = VGroup(bottom_box, bottom_text)
-        bottom.move_to(DOWN * 2.94)
+        bottom.move_to(DOWN * 3.00)
         self.play(Write(bottom, run_time=1.2))
         self.wait(2.2)
 

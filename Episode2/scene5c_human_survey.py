@@ -69,13 +69,15 @@ class Scene5CHumanSurvey(Scene):
         self.wait(0.75)
 
         bridge = Text(
-            "The survey tests whether optimization finds layouts people would not naturally choose.",
-            font_size=23,
+            "The survey tests whether optimization finds layouts\npeople would not naturally choose.",
+            font_size=26,
             color=YELLOW_3B1B,
             weight=BOLD,
+            line_spacing=1.05,
         )
-        bridge.scale_to_fit_width(11.2)
-        bridge.to_edge(DOWN, buff=0.50)
+        if bridge.width > 11.2:
+            bridge.scale_to_fit_width(11.2)
+        bridge.to_edge(DOWN, buff=0.42)
         self.play(FadeIn(bridge, shift=UP * 0.08), run_time=0.8)
         self.wait(2.4)
 

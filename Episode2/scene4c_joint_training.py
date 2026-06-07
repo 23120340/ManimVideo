@@ -95,9 +95,15 @@ class Scene4CJointTraining(Scene):
         self.play(Create(update_arrow), FadeIn(update_label, shift=UP * 0.1), run_time=1.2)
         self.wait(4.8)
 
-        takeaway = Text("This avoids training a brand-new controller from scratch for every sensor design.", font_size=23, color=YELLOW_3B1B, weight=BOLD)
+        takeaway = Text(
+            "This avoids training a brand-new controller\nfrom scratch for every sensor design.",
+            font_size=25,
+            color=YELLOW_3B1B,
+            weight=BOLD,
+            line_spacing=1.05,
+        )
         takeaway.scale_to_fit_width(11.3)
-        takeaway.to_edge(DOWN, buff=0.30)
+        takeaway.to_edge(DOWN, buff=0.34)
         self.play(FadeIn(takeaway, shift=UP * 0.08), run_time=0.8)
         self.wait(4.0)
 

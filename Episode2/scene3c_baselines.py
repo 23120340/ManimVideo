@@ -17,8 +17,8 @@ from common import *  # noqa: F401,F403
 
 def baseline_card(name, color, kind):
     frame = RoundedRectangle(
-        width=2.45,
-        height=2.0,
+        width=2.12,
+        height=1.66,
         corner_radius=0.18,
         color=color,
         stroke_width=2.0,
@@ -51,10 +51,12 @@ def baseline_card(name, color, kind):
         body = Ellipse(width=0.95, height=0.55, color=color, stroke_width=1.6)
         dots = VGroup(*[Dot(p, radius=0.045, color=YELLOW_3B1B) for p in positions])
         icon.add(body, dots)
-    icon.move_to(frame.get_center() + UP * 0.18)
-    label = Text(name, font_size=15, color=color, weight=BOLD, line_spacing=0.95)
-    label.scale_to_fit_width(2.05)
-    label.move_to(frame.get_bottom() + UP * 0.32)
+    icon.scale(0.88)
+    icon.move_to(frame.get_center() + UP * 0.16)
+    label = Text(name, font_size=22, color=color, weight=BOLD, line_spacing=0.95)
+    if label.width > 1.72:
+        label.scale_to_fit_width(1.72)
+    label.move_to(frame.get_bottom() + UP * 0.28)
     return VGroup(frame, icon, label)
 
 
@@ -68,8 +70,8 @@ def bar_chart(names, values, colors):
         bar.move_to(axis.get_left() + RIGHT * (1.0 + i * 2.45) + UP * height / 2)
         labels.add(Text(name, font_size=15, color=color, weight=BOLD).next_to(bar, DOWN, buff=0.18))
         bars.add(bar)
-    metric = Text("SPL = success x efficient path", font_size=20, color=YELLOW_3B1B, weight=BOLD)
-    metric.next_to(axis, UP, buff=2.15)
+    metric = Text("SPL = success x efficient path", font_size=17, color=YELLOW_3B1B, weight=BOLD)
+    metric.next_to(axis, UP, buff=1.72)
     return VGroup(axis, bars, labels, metric)
 
 
@@ -88,7 +90,7 @@ class Scene3CBaselines(Scene):
             baseline_card("random", ORANGE_3B1B, "random"),
             baseline_card("opt PR", GREEN_3B1B, "optimized"),
         ).arrange(RIGHT, buff=0.35)
-        cards.move_to(UP * 0.88)
+        cards.move_to(UP * 1.10)
 
         self.play(LaggedStart(*[FadeIn(card, shift=UP * 0.12) for card in cards], lag_ratio=0.15), run_time=1.8)
         self.wait(2.6)
@@ -98,7 +100,8 @@ class Scene3CBaselines(Scene):
             [0.18, 0.88, 0.44, 0.78],
             [RED_BRAIN, BLUE_3B1B, ORANGE_3B1B, GREEN_3B1B],
         )
-        chart.move_to(DOWN * 1.48)
+        chart.move_to(DOWN * 1.82)
+        chart[3].move_to(UP * 0.02)
         self.play(FadeIn(chart[0]), FadeIn(chart[3], shift=UP * 0.08), run_time=0.7)
         self.play(LaggedStart(*[GrowFromEdge(bar, DOWN) for bar in chart[1]], lag_ratio=0.12), run_time=1.0)
         self.play(LaggedStart(*[FadeIn(label, shift=UP * 0.06) for label in chart[2]], lag_ratio=0.10), run_time=0.6)
